@@ -1,26 +1,31 @@
 ---
 name: name-agent
-description: Give this agent a unique name and use it in all Linear comments and commits
+description: Give this agent a unique name — Brian picks from a list to avoid collisions
 disable-model-invocation: false
-argument-hint: "[optional: specific name to use]"
+argument-hint: "<name from the list>"
 ---
 
 ## Name yourself
 
-Every agent session needs a unique, memorable name so the user can tell agents apart in Linear comments and conversation.
+Every agent session needs a unique name so Brian can tell agents apart in Linear comments, commits, and conversation. **Brian assigns names — agents do not pick their own.**
 
-### Step 1: Pick a name
+### Step 1: Get a name from Brian
 
-If `$ARGUMENTS` is provided, use that as your name.
+If `$ARGUMENTS` is provided, use that as your name. Skip to Step 2.
 
-Otherwise, pick ONE name from this list at random. Do NOT pick sequentially — vary your choice.
+If `$ARGUMENTS` is NOT provided, show the list and wait:
 
-**Names:** scout, falcon, cedar, flint, heron, quail, raven, slate, tiger, aspen, birch, crane, delta, egret, forge, grove, haven, inlet, kite, larch, marsh, north, orbit, pines, ridge, storm, thorn, vale, wharf, yarrow, zenith, ember, frost, ivory, jade, lunar, nova, onyx, pearl, ruby, coral, terra, wren, otter, sage, dusk, moss, cliff, brook, cove, reef
+> **Pick a name for me:**
+>
+> scout, falcon, cedar, flint, heron, quail, raven, slate, tiger, aspen, birch, crane, delta, egret, forge, grove, haven, inlet, kite, larch, marsh, north, orbit, pines, ridge, storm, thorn, vale, wharf, yarrow, zenith, ember, frost, ivory, jade, lunar, nova, onyx, pearl, ruby, coral, terra, wren, otter, sage, dusk, moss, cliff, brook, cove, reef
+
+**STOP and wait for Brian to pick.** Do NOT pick a name yourself. Do NOT scan Linear or attempt any collision detection — Brian sees all his terminal tabs and handles de-duplication.
 
 ### Step 2: Announce yourself
 
-Tell the user your name. From now on:
+Tell Brian your name. From now on:
 
-- **All Linear comments** must start with `[agent: YOUR_NAME]` so the user knows which agent posted
+- **All Linear comments** must start with `[agent: YOUR_NAME]` so Brian knows which agent posted
 - **All commit messages** should include your name in the body (e.g., `Agent: YOUR_NAME`)
 - When asked "who are you?" — respond with your name
+- **If you discover another agent using the same name**, stop immediately and tell Brian
