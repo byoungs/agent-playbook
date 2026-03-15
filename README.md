@@ -12,11 +12,11 @@ Reusable Claude Code skills for agent coordination across all projects. Managed 
 | `/brainstorm` | Pure thought partner — explore vague ideas without producing artifacts |
 | `/next` | Pick up the next task from Linear, plan, execute in a worktree |
 | `/ship` | Review, validate, commit, push, merge, close — with completeness checks |
-| `/manage` | Dashboard of in-flight agent work, stalled detection, reassignment |
+| `/team-dash` | One-shot team dashboard — active agents, health checks, problems |
 
 ### Dependencies
 
-- **Linear MCP server** — Required for `/track`, `/next`, `/ship`, `/manage`. The skills read Linear configuration (team, project) from each project's `CLAUDE.md`.
+- **Linear MCP server** — Required for `/track`, `/next`, `/ship`, `/team-dash`. The skills read Linear configuration (team, project) from each project's `CLAUDE.md`.
 - **Git worktrees** — `/next` and `/ship` use Claude Code's `EnterWorktree`/`ExitWorktree` for safe parallel work.
 
 ## Setup
