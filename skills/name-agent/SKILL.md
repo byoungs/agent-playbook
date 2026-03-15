@@ -26,6 +26,5 @@ If `$ARGUMENTS` is NOT provided, show the list and wait:
 Tell Brian your name. From now on:
 
 - **All Linear comments** must start with `[agent: YOUR_NAME]` so Brian knows which agent posted
-- **All commit messages** should include your name in the body (e.g., `Agent: YOUR_NAME`)
 - When asked "who are you?" — respond with your name
 - **If you discover another agent using the same name**, stop immediately and tell Brian
