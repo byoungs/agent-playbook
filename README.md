@@ -7,7 +7,7 @@ Reusable Claude Code skills for agent coordination across all projects. Managed 
 ### Agent Coordination
 | Skill | Description |
 |-------|-------------|
-| `/name-agent` | Assign a unique agent name for Linear comments and commits |
+| `/name-agent` | Get a session number (1-9) for agent identity and port isolation |
 | `/track` | Quick-capture observations, bugs, ideas → Linear backlog items |
 | `/brainstorm` | Pure thought partner — explore vague ideas without producing artifacts |
 | `/next` | Pick up the next task from Linear, plan, execute in a worktree |
@@ -42,6 +42,29 @@ Skills that need project context (Linear team/project, build commands) read from
 - Test: go test ./...
 - Frontend: npx --prefix client tsc -p client/tsconfig.json --noEmit
 ```
+
+## Environment Variable Hygiene
+
+Standard pattern for all projects:
+
+| File | In git? | Contains |
+|------|---------|----------|
+| `dev.env` | **Yes** | Non-secret defaults (DB URL, ports, flags, dev signing keys) |
+| `.env` | No | Secrets only (API keys, OAuth creds, tokens) + personal info |
+
+**Rules:**
+- **No direnv.** `dev.sh` loads both files explicitly before starting servers.
+- **Makefile targets use hardcoded constants** for local DB — never env vars.
+- **Dev and prod use SEPARATE credentials.** Prod creds go in hosting platform secrets (e.g., `fly secrets set`), never in `.env`.
+- **`dev.env` values with `$` must be single-quoted** — `dev.sh` uses a safe loader but `$` in unquoted values is a shell footgun.
+- **SESSION_NUMBER in `dev.env`** offsets ports for parallel agents (Go: 8080+N, Vite: 5173+N).
+
+### For new projects
+
+1. Create `dev.env` with non-secret defaults (DB connection, `MOCK_LLM=true`, ports)
+2. Create `.env` for secrets, add `.env` to `.gitignore`
+3. Have `dev.sh` load both files safely before starting servers
+4. Hardcode local DB connection in Makefile and ORM config — no env vars
 
 ## Philosophy
 
