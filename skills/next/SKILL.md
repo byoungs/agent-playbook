@@ -61,10 +61,11 @@ After user answers:
 **ALL code changes in a worktree. Zero exceptions.**
 
 1. `EnterWorktree`
-2. Implement, write tests, validate
-3. Run the project's build and test commands (check CLAUDE.md for specifics)
-4. Commit: message must include issue ID and `Agent: NAME`
-5. `ExitWorktree`
+2. **Worktree setup:** If the project has `make worktree-setup` or `scripts/worktree-setup.sh`, run it with your session number (e.g., `make worktree-setup N=2`). This handles copying `.env`, setting session ports, and installing frontend deps. If no setup script exists, manually ensure `.env` is available and `SESSION_NUMBER` is set in `dev.env`.
+3. Implement, write tests, validate
+4. Run the project's build and test commands (check CLAUDE.md for specifics)
+5. Commit: message must include issue ID and `Agent: NAME`
+6. `ExitWorktree`
 
 ### Step 7: Close out
 

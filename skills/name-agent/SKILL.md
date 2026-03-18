@@ -33,11 +33,16 @@ Tell Brian:
 > I'm **[name]** (session [N]). Ports: :[Go port] / :[Vite port].
 > All Linear comments will start with `[agent: name]`.
 
-### Step 3: Set SESSION_NUMBER in worktree
+### Step 3: Set up worktree (if applicable)
 
-If working in a worktree, add to the worktree's `dev.env` (local modification, don't commit):
+If working in a worktree, run the project's worktree setup with your session number:
 
-```
+```bash
+# If the project has a setup script:
+make worktree-setup N=<your number>
+# This copies .env, sets SESSION_NUMBER, installs frontend deps
+
+# If no setup script, manually add to dev.env (don't commit):
 SESSION_NUMBER=N
 ```
 
