@@ -1,5 +1,5 @@
 ---
-name: ship
+name: stage
 description: Autonomous review, validate, commit, and prepare a single rebased commit for Brian's local review and ff-only merge
 disable-model-invocation: true
 argument-hint: "[optional: issue ID like PEN-55]"
