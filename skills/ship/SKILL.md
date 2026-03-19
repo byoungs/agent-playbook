@@ -1,15 +1,15 @@
 ---
 name: ship
-description: Autonomous review, validate, commit, and push pipeline — detects incomplete work
+description: Autonomous review, validate, commit, and prepare a single rebased commit for Brian's local review and ff-only merge
 disable-model-invocation: true
 argument-hint: "[optional: issue ID like PEN-55]"
 ---
 
 ## Ship the current task
 
-Wrap up the current worktree work: review, validate, commit, push, merge to main, and close out the Linear issue.
+Wrap up the current worktree work: review, validate, squash into a single commit rebased on main, and hand off for Brian's local review. Does NOT merge to main — Brian does that.
 
-**Requires:** Linear MCP server configured. Read the project's CLAUDE.md for Linear team name, project name, build/test commands, and any deploy procedures.
+**Requires:** Linear MCP server configured. Read the project's CLAUDE.md for Linear team name, project name, build/test commands.
 
 ### Step 1: Verify you're in a worktree
 
@@ -51,35 +51,37 @@ Before shipping, verify the work is actually done:
 
 3. **If work appears incomplete**, stop and tell the user what's missing. Offer to continue implementing or ship what's done with a note.
 
-### Step 5: Commit and push
+### Step 5: Prepare a single commit
 
-1. Check for uncommitted changes — if any exist, commit them with a descriptive message referencing the Linear issue
-2. Stage files individually with `git add <file>`. NEVER use `git add .` or `git add -A`
-3. Write commit message following the project's recent commit style. Include issue ID. End with:
+The goal is **one clean commit** on a branch that is up-to-date with main, ready for `git merge --ff-only`.
+
+1. Stage all changes individually with `git add <file>`. NEVER use `git add .` or `git add -A`
+2. Commit (or amend into a single commit if there are multiple). Write a message following the project's recent commit style. Include Linear issue ID. End with:
    ```
-   Agent: NAME
    Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
    ```
-4. Push the branch: `git push -u origin <branch>`
+3. Rebase onto main: `git rebase main` — resolve any conflicts
+4. Verify the branch has exactly **1 commit** ahead of main: `git log --oneline main..HEAD`
+   - If more than 1 commit, squash with `git rebase -r main` using fixup
+5. Run checks one more time after rebase to make sure nothing broke
 
-If push fails due to diverged branch, STOP and tell the user. Do NOT force push.
-
-### Step 6: Merge to main
-
-1. Use `ExitWorktree` to return to main and clean up the worktree
-2. Run `git merge <branch>` to merge the work into main
-3. Run `git push` to push main to the remote
-
-### Step 7: Close out Linear
+### Step 6: Update Linear
 
 1. If an issue ID was provided (`$ARGUMENTS`), use that. Otherwise, infer from the branch name (e.g., `pen-56-sign-in-is-broken` → PEN-56)
-2. Move the Linear issue to "Done"
-3. Post a completion comment: `"[agent: NAME] Shipped. Branch: BRANCH. What was done: ... Follow-up: ..."`
+2. Move the Linear issue to "In Review"
+3. Post a comment: `"[agent: NAME] Ready for review. Branch: BRANCH. What was done: ... Needs attention: ..."`
 
-### Step 8: Confirm
+### Step 7: Hand off to Brian
 
 Tell the user:
-- What was merged
-- The Linear issue that was closed
-- Whether the push to main succeeded
-- Any follow-up items (deploy, notify someone, etc.)
+- The worktree path (they review in VS Code GitLens)
+- What the commit contains (brief summary)
+- The Linear issue status
+- Any areas that deserve extra attention during review
+
+Brian will:
+1. Review the commit in VS Code
+2. `git merge --ff-only <branch>` on main
+3. Run `make test`, `make validate`, `git push`, and `make deploy` from his terminal
+
+**Do NOT merge to main. Do NOT push to origin. Do NOT deploy.**
