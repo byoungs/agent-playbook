@@ -9,10 +9,6 @@ argument-hint: "[optional: issue ID like PEN-55]"
 
 **Requires:** Linear MCP server configured. Read the project's CLAUDE.md for Linear team name, project name, and workspace details.
 
-### Step 0: Name
-
-If you don't have an agent name yet, run `/name-agent` first. Your name goes in all Linear comments and commits.
-
 ### Step 1: Find the task
 
 If `$ARGUMENTS` has an issue ID, fetch that. Otherwise:

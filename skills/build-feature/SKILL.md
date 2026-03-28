@@ -18,9 +18,6 @@ If no description provided, ask: "What do you want to build?"
 
 ## Phase 0: Setup (Linear + Worktree)
 
-### Agent Name
-If you don't have an agent name yet, run `/name-agent` first.
-
 ### Create Linear Issue
 1. Read CLAUDE.md for the Linear team ID, project name, and workspace details.
 2. Create an issue with:

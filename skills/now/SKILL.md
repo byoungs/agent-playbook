@@ -10,10 +10,6 @@ For work that isn't in Linear yet. Creates the issue, claims it, and drops you i
 
 **Requires:** Linear MCP server configured. Read the project's CLAUDE.md for Linear team name, project name, and workspace details.
 
-### Step 0: Name
-
-If you don't have an agent name yet, run `/name-agent` first. Your name goes in all Linear comments.
-
 ### Step 1: Validate input
 
 `$ARGUMENTS` is the task description. If empty, ask the user: "What do you need done?" and **STOP**.
