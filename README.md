@@ -1,40 +1,76 @@
 # Agent Playbook
 
-The central brain for how we build software with AI agents. This repo contains the development methodology, reusable skills, and research that guide all projects in `~/src/`.
+This is the brain. The central authority for how I build software with AI agents — the methodology, the skills, the research behind it all.
 
-Every project shares these skills and follows these patterns. Project-specific config lives in each project's `CLAUDE.md`; the universal system lives here.
+Every project in `~/src/` shares these skills and follows these patterns. Project-specific config lives in each project's `CLAUDE.md`; the universal system lives here.
 
-## How We Work
+## Here's How I Work
 
-### The Development Lifecycle
+I run multiple Claude Code agents in parallel using three tools:
+
+**[amux](https://github.com/byoungs/amux)** — A terminal multiplexer purpose-built for parallel AI coding. Agents expand and contract fluidly. Pane borders show agent state (working, waiting, idle). I zoom in to pair with one agent, zoom out to survey the team.
+
+**[wtr](https://github.com/byoungs/wtr)** — A worktree review TUI. When an agent finishes work in a worktree, I review the diff, run tests, and land (ff-only merge → validate → push) — all without leaving the terminal.
+
+**[Linear](https://linear.app)** — The coordination layer. Every task gets a Linear issue. Agents post status updates as they work. I see the big picture in Linear; I see the code in wtr; I manage attention in amux.
+
+A typical session looks like this:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  amux                                                   │
+│                                                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
+│  │ Agent 1     │  │ Agent 2     │  │ Agent 3     │     │
+│  │ /dev Add    │  │ /dev next   │  │ /harden     │     │
+│  │ auth system │  │ PEN-42      │  │ (reviewing  │     │
+│  │             │  │             │  │  yesterday's │     │
+│  │ [working]   │  │ [waiting]   │  │  code)      │     │
+│  └─────────────┘  └─────────────┘  └─────────────┘     │
+│                                                         │
+│  Agent 1: implementing auth (Phase 4, task 3/5)         │
+│  Agent 2: waiting for plan approval                     │
+│  Agent 3: security review found 2 issues, fixing...     │
+│                                                         │
+│  Linear: 3 tasks in progress, 2 in review               │
+└─────────────────────────────────────────────────────────┘
+```
+
+When agents finish, I switch to wtr to review and land their work:
+
+```
+wtr → review diff → run tests → land (ff-only merge → push)
+```
+
+### The Project Lifecycle
 
 Projects follow a natural arc from simple to structured:
 
-**Early stage** — Work directly on main. Low ceremony. Just describe what you need and go.
+**Early stage** — Work directly on main. Low ceremony. Just describe what you need.
 ```
-Human: "Fix the date parser"  →  Agent works on main  →  Commit  →  Push
-```
-
-**Growing** — Move to worktrees as the project develops. `/now` creates a task and isolates work.
-```
-Human: /now Add user authentication
-  →  Linear issue created  →  Worktree  →  Plan  →  Implement  →  /stage  →  Review + merge
+"Fix the date parser"  →  agent works on main  →  commit  →  push
 ```
 
-**Mature** — Full pipeline with parallel agents, structured review, and compounding learning.
+**Growing** — Move to worktrees as the project develops and parallel work increases.
 ```
-Human: /build-feature Add webhook notifications
-  →  Brainstorm  →  Plan  →  Review plan  →  Execute with enhanced pipeline  →  Merge
+/dev Add user auth  →  Linear issue  →  worktree  →  plan  →  implement  →  review in wtr  →  land
 ```
 
-### The Enhanced Pipeline
+**Mature** — Full pipeline with parallel agents in amux, structured review, compounding learning.
+```
+/dev Add webhooks  →  brainstorm  →  plan  →  3 parallel reviewers  →  synthesis critiquer  →  land
+```
 
-When a feature goes through the full pipeline, here's what happens:
+Every project I've built — ai-scheduler, wtr, clueless-closet, trade — has gone through this same arc.
+
+## The Development Pipeline
+
+When work goes through the full `/dev` pipeline, here's what happens:
 
 ```
  Human
    │
-   │  describes intent
+   │  /dev Add webhook notifications
    ▼
  ┌─────────────┐
  │  Brainstorm  │  ← human participates, approves design
@@ -52,7 +88,7 @@ When a feature goes through the full pipeline, here's what happens:
         │
         ▼
  ┌──────────────┐
- │ Implementer  │  TDD, self-review
+ │ Implementer  │  TDD, self-review, functional core architecture
  └──────┬───────┘
         │
         ├──────────────────┬──────────────────┐
@@ -78,81 +114,82 @@ When a feature goes through the full pipeline, here's what happens:
         Next task...
               │
               ▼
- ┌──────────────────┐
- │   Compounding    │  proposes CLAUDE.md rules,
- │    Learner       │  permission changes
- └──────────────────┘
+      Compounding Learner
+      (proposes CLAUDE.md rules)
               │
               ▼
-       Session Summary
+      Stage for review in wtr
 ```
 
-**Human touchpoints:** You participate during brainstorm and planning. After plan approval, the pipeline runs autonomously. You're only surfaced if a kickback or blocker occurs.
+**Human touchpoints:** I participate during brainstorm and planning. After plan approval, the pipeline runs autonomously. I'm only surfaced if a kickback or blocker occurs. When it's done, I review and land in wtr.
 
 ### Key Principles
 
 - **Plan before you code, always.** Spec-driven development, not vibe coding.
-- **TDD is the quality backbone.** Tests encode intent; agents write implementation to pass them. Prefer fakes over mocks; mock at boundaries only.
+- **TDD is the quality backbone.** Tests encode intent; agents write implementation to pass them.
+- **Functional core, imperative shell.** Pure domain logic with no dependencies. Mocks at boundaries only. Fakes over mocks.
 - **Parallel review beats serial review.** Three independent reviewers catch more than one pass.
 - **A single critiquer routes all decisions.** Coordinated review topology prevents the [17x error trap](https://towardsdatascience.com/why-your-multi-agent-system-is-failing-escaping-the-17x-error-trap-of-the-bag-of-agents/).
-- **Compounding engineering.** Every correction gets encoded so each session is smarter. You should never correct an agent twice for the same mistake.
-- **Humans on the loop, not in the loop.** Build the harness — specs, quality checks, workflow guidance. Fix the system, not the artifacts.
+- **Compounding engineering.** Every correction gets encoded so each session is smarter.
+- **Humans on the loop, not in the loop.** Build the harness. Fix the system, not the artifacts.
 
 ## Skills
 
-Installed globally via `bash setup.sh`. Available in every project.
+7 skills, installed globally via `bash setup.sh`.
 
-### Development Pipeline
-
-| Skill | Description |
+| Skill | What it does |
 |-------|-------------|
-| `/brainstorm` | Thought partner — explore ideas before committing to a direction |
-| `/build-feature` | **End-to-end**: brainstorm → plan → review → execute → merge. The single entry point for new features. |
-| `/enhanced-pipeline` | Full orchestration with parallel reviews, kickbacks, compounding learning. Use when you already have a plan. |
-| `/review-plan` | Staff engineer plan review before execution begins |
-
-### Review & Quality (used by the pipeline internally)
-
-| Skill | Description |
-|-------|-------------|
-| `/security-reviewer` | Read-only security audit dispatched during review |
-| `/synthesis-critiquer` | Deduplicates findings, resolves contradictions, decides routing (PASS / LOCAL_FIX / KICKBACK) |
-| `/compounding-learner` | Detects recurring patterns, proposes CLAUDE.md updates |
-
-### Agent Coordination
-
-| Skill | Description |
-|-------|-------------|
-| `/now` | Create a Linear task, claim it, enter a worktree, start planning |
-| `/next` | Pick up the next task from Linear, plan, execute in a worktree |
-| `/stage` | Review, validate, squash into a single rebased commit for local ff-only merge |
-| `/track` | Quick-capture observations, bugs, ideas → Linear backlog |
-| `/team-dash` | One-shot team dashboard — active agents, health, problems |
+| `/dev` | **The central command.** `/dev <description>` runs the full pipeline. `/dev next` picks up a Linear task. `/dev track <note>` captures for later. |
+| `/harden` | **Retroactive quality.** Already wrote code? Run the review pipeline on it without throwing anything away. |
+| `/learn` | **Compounding learning.** Analyze recent work for patterns. Propose CLAUDE.md rules and permission changes to reduce friction. |
+| `/brainstorm` | **Thought partner.** Explore ideas before committing to a direction. |
+| `/review-plan` | **Staff engineer review.** Skeptical plan review before execution begins. |
+| `/stage` | **Wrap up.** Review, validate, squash into a clean commit for wtr landing. Also the final phase of `/dev`. |
+| `/tidy` | **Hygiene.** Clean up dead worktrees, stale branches, orphaned Linear tasks. |
 
 ### How to Use
 
 ```bash
-# New feature, full pipeline
-/build-feature Add webhook notifications when deployments complete
+# Full pipeline — brainstorm, plan, review, implement, stage
+/dev Add webhook notifications when deployments complete
 
-# Already have a plan
-/enhanced-pipeline docs/superpowers/plans/your-plan.md
+# Pick up next task from Linear
+/dev next
 
-# Quick task, lightweight
-/now Fix the broken date parser in utils.go
+# Specific Linear task
+/dev next PEN-55
 
-# Just review a plan
-/review-plan docs/superpowers/plans/your-plan.md
+# Capture something for later
+/dev track Need to refactor the auth middleware
 
-# Already implemented, want the review phase only
-# (describe what to review — the pipeline starts from Step 2)
+# Already wrote code, make it robust
+/harden
+
+# Reduce permission prompts, learn from recent work
+/learn permissions
+
+# Clean up dead worktrees and stale tasks
+/tidy
 ```
+
+### Internal Pipeline Components
+
+The `/dev` and `/harden` pipelines dispatch subagents using instructions from `lib/`:
+
+| Component | Purpose |
+|-----------|---------|
+| `lib/security-reviewer.md` | Read-only security audit instructions for the security review subagent |
+| `lib/synthesis-critiquer.md` | Deduplication, contradiction resolution, and routing logic for the synthesis subagent |
+
+These are not user-facing skills. They're prompt templates that `/dev` and `/harden` read and inline into subagent dispatches.
 
 ### Dependencies
 
-- **Linear MCP server** — for `/track`, `/now`, `/next`, `/stage`, `/team-dash`
-- **Git worktrees** — `/now`, `/next`, `/stage`, `/build-feature` use `EnterWorktree`/`ExitWorktree`
-- **Superpowers plugin** — the pipeline reuses superpowers skills (TDD, verification, code review)
+- **[amux](https://github.com/byoungs/amux)** — Terminal multiplexer for parallel agents
+- **[wtr](https://github.com/byoungs/wtr)** — Worktree review TUI for reviewing and landing agent work
+- **Linear MCP server** — Task coordination (`/dev`, `/dev next`, `/dev track`, `/tidy`)
+- **Git worktrees** — `/dev` and `/stage` use `EnterWorktree`/`ExitWorktree`
+- **Superpowers plugin** — TDD, verification, code review templates
 
 ## Setup
 
@@ -160,11 +197,11 @@ Installed globally via `bash setup.sh`. Available in every project.
 bash setup.sh
 ```
 
-Symlinks skills and the global `CLAUDE.md` into `~/.claude/` so they're available in every project. Project-specific skills (like `/deploy`) stay in each project's `.claude/skills/`.
+Symlinks skills and the global `CLAUDE.md` into `~/.claude/` so they're available in every project.
 
 ## Best Practices for All Projects
 
-These are the standards across all repos in `~/src/`. Each project's `CLAUDE.md` should reference or extend these.
+Standards across all repos in `~/src/`. Each project's `CLAUDE.md` should reference or extend these.
 
 ### Project Configuration
 
@@ -179,58 +216,46 @@ Skills read project context from each project's `CLAUDE.md`:
 ## Build & Test
 - Build: go build ./...
 - Test: go test ./...
-- Lint: golangci-lint run ./...
 ```
 
 ### Environment Variable Hygiene
 
 | File | In git? | Contains |
 |------|---------|----------|
-| `dev.env` | **Yes** | Non-secret defaults (DB URL, ports, flags, dev signing keys) |
+| `dev.env` | **Yes** | Non-secret defaults (DB URL, ports, flags) |
 | `.env` | No | Secrets only (API keys, OAuth creds, tokens) |
 
-**Rules:**
-- **No direnv.** `dev.sh` loads both files explicitly before starting servers.
-- **Makefile targets use hardcoded constants** for local DB — never env vars. Prevents accidentally running against the wrong database.
-- **Dev and prod use SEPARATE credentials.** Prod creds go in hosting platform secrets (e.g., `fly secrets set`), never in `.env`.
-- **SESSION_NUMBER in `dev.env`** offsets ports for parallel agents (Go: 8080+N, Vite: 5173+N).
-
-**For new projects:** Create `dev.env` (in git) + `.env` (gitignored) + `dev.sh` that loads both.
+- **No direnv.** `dev.sh` loads both files.
+- **Makefile targets use hardcoded constants** for local DB — never env vars.
+- **Dev and prod use SEPARATE credentials.** Prod goes in hosting secrets, never `.env`.
 
 ### Testing & Architecture
 
-- **Structure code as functional core + imperative shell.** Pure business logic in a core layer; side effects in a thin shell. Domain logic should be testable without mocks.
-- **Prefer fakes over mocks.** A fake `InMemoryUserRepo` is more trustworthy than `mock(UserRepo)`.
+- **Functional core + imperative shell.** Pure business logic in a core layer; side effects in a thin shell.
+- **Prefer fakes over mocks.** `InMemoryUserRepo` > `mock(UserRepo)`.
 - **Mock at system boundaries only.** Never mock the unit under test.
-- **Assert on outputs, not call counts.** Tests verify behavior, not implementation.
-- **Separate test-writing from implementation when possible.** Tests in the same context mirror the implementation, not intent.
+- **Assert on outputs, not call counts.**
+- **Separate test-writing from implementation when possible.**
 
-See [Testing & Architecture research](research/testing-architecture-2026-03-28.md) for the full rationale (arXiv data, practitioner evidence, five-layer defense stack).
+See [Testing & Architecture research](research/testing-architecture-2026-03-28.md) for the data behind these rules.
 
 ## Research & Design
 
-The methodology in [How We Work](#how-we-work) is backed by research into what the best practitioners are doing.
+The methodology above is backed by research into what the best practitioners are doing.
 
 ### Research
-- [Landscape Report](research/landscape-report.md) — Tools, frameworks, and patterns across the agentic dev ecosystem
-- [Trusted Voices](research/trusted-voices.md) — Boris Cherny, Kent Beck, Martin Fowler, Simon Willison, Karpathy, Yegge — tiered by credibility
-- [Expert Review](research/expert-review-2026-03-28.md) — Critical assessment against latest expert thinking (Mar 2026)
+- [Expert Review](research/expert-review-2026-03-28.md) — Critical assessment against Boris Cherny, Kent Beck, Fowler, Willison, Yegge, Anthropic, Tornhill (Mar 2026)
 - [Testing & Architecture](research/testing-architecture-2026-03-28.md) — How hexagonal architecture fixes AI's mock problem
-- [ClawMux Analysis](research/clawmux-analysis.md) — 7-agent pipeline with kickback mechanism (inspiration for our critiquer)
+- [Landscape Report](research/landscape-report.md) — Tools, frameworks, and patterns across the agentic dev ecosystem
+- [Trusted Voices](research/trusted-voices.md) — Boris Cherny, Kent Beck, Martin Fowler, Simon Willison — tiered by credibility
+- [ClawMux Analysis](research/clawmux-analysis.md) — 7-agent pipeline with kickback mechanism
 - [Boris Cherny's Workflow](research/boris-cherny-workflow.md) — How the Claude Code creator ships 20-30 PRs/day
 - [Retry Limits](research/retry-limits.md) — Expert consensus: 3 retries before escalation
-- [Brainstorm Session](research/2026-03-27-brainstorm-session.md) — Design session notes: how we got here, every decision and why
+- [Brainstorm Session](research/2026-03-27-brainstorm-session.md) — Design session notes
 
 ### Design
-- [Pipeline Architecture](design/pipeline-architecture.md) — Full pipeline spec: parallel reviews, synthesis critiquer, kickbacks, compounding learning
-- [Comparison Matrix](design/comparison-matrix.md) — Stage-by-stage comparison against ClawMux, Boris's workflow, superpowers baseline
+- [Pipeline Architecture](design/pipeline-architecture.md) — Full pipeline spec
+- [Comparison Matrix](design/comparison-matrix.md) — Stage-by-stage comparison against ClawMux, Boris, superpowers baseline
 
 ### References
 - [Key Reading List](references/key-reading-list.md) — Prioritized reading (Anthropic eng blog, practitioner workflows, methodology)
-
-## Philosophy
-
-- **This repo is the brain.** Central authority for development methodology, best practices, and agent skills across all projects.
-- **Linear is the coordination layer.** Task tracking, agent communication, and status live in Linear.
-- **Skills are generic.** Project-specific config comes from each project's `CLAUDE.md`, not from the skills.
-- **Could be adapted.** Linear is free and good at this, but the patterns could work with GitHub Issues or any tracking system.
