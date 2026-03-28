@@ -66,6 +66,60 @@ Standard pattern for all projects:
 3. Have `dev.sh` load both files safely before starting servers
 4. Hardcode local DB connection in Makefile and ORM config — no env vars
 
+## Research & Design (2026-03-27)
+
+Research and architecture for the enhanced agentic pipeline — parallel reviews, synthesis critiquer with kickback mechanism, security review, and compounding learning.
+
+### Research
+- [Landscape Report](research/landscape-report.md) — Tools, frameworks, and patterns across the agentic dev ecosystem
+- [Trusted Voices](research/trusted-voices.md) — Who to trust: Boris Cherny, Kent Beck, Martin Fowler, Simon Willison, Karpathy, Yegge, etc.
+- [ClawMux Analysis](research/clawmux-analysis.md) — Deep dive on the 7-agent pipeline orchestrator with kickback mechanism
+- [Boris Cherny's Workflow](research/boris-cherny-workflow.md) — How the Claude Code creator uses Claude Code (20-30 PRs/day)
+- [Retry Limits](research/retry-limits.md) — Expert consensus on loop/retry limits (the magic number is 3)
+
+### Design
+- [Pipeline Architecture](design/pipeline-architecture.md) — The enhanced pipeline: parallel reviews, synthesis critiquer, kickbacks, compounding learning
+- [Comparison Matrix](design/comparison-matrix.md) — Stage-by-stage comparison against ClawMux, Boris, superpowers baseline
+
+### References
+- [Key Reading List](references/key-reading-list.md) — Prioritized reading list (Anthropic eng blog, practitioner workflows, methodology)
+
+### Enhanced Pipeline Skills
+
+Built from this research, installed in `~/.claude/skills/`:
+
+| Skill | Description |
+|-------|-------------|
+| `/build-feature` | **End-to-end**: brainstorm → plan → review → execute. Creates Linear issue, works in worktree, tracks progress throughout. The single entry point for new features. |
+| `/enhanced-pipeline` | Full orchestration: parallel reviews, kickbacks, compounding learning. Use directly when you already have a plan. |
+| `/review-plan` | Staff engineer plan review before execution |
+| `/security-reviewer` | Read-only security audit (subagent persona) |
+| `/synthesis-critiquer` | Meta-reviewer + pipeline router with kickback mechanism |
+| `/compounding-learner` | Pattern detection, CLAUDE.md auto-updates, permission analysis |
+
+### How to Use
+
+**New feature (full pipeline):**
+```
+/build-feature Add webhook notifications when deployments complete
+```
+Creates Linear issue → brainstorms design (you approve) → writes plan (you approve) → reviews plan → executes autonomously in worktree → presents merge/PR options.
+
+**Already have a plan:**
+```
+/enhanced-pipeline docs/superpowers/plans/your-plan.md
+```
+
+**Already implemented, want reviews:**
+```
+Skip implementation, run the review phase of /enhanced-pipeline starting from Step 2 for the changes on this branch. Task requirements: [paste or point to plan]
+```
+
+**Just review a plan:**
+```
+/review-plan docs/superpowers/plans/your-plan.md
+```
+
 ## Philosophy
 
 - **Linear is the coordination layer.** All task tracking, agent communication, and status lives in Linear.
