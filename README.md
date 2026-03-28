@@ -4,6 +4,8 @@ This is the brain. The central authority for how I build software with AI agents
 
 Every project in `~/src/` shares these skills and follows these patterns. Project-specific config lives in each project's `CLAUDE.md`; the universal system lives here.
 
+This repo itself runs on **trunk flow** — agents contribute directly to main.
+
 ## Here's How I Work
 
 I run multiple Claude Code agents in parallel using three tools:
@@ -14,7 +16,7 @@ I run multiple Claude Code agents in parallel using three tools:
 
 **[Linear](https://linear.app)** — The coordination layer. Every task gets a Linear issue. Agents post status updates as they work. I see the big picture in Linear; I see the code in wtr; I manage attention in amux.
 
-A typical session looks like this:
+A typical session:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -24,78 +26,76 @@ A typical session looks like this:
 │  │ Agent 1     │  │ Agent 2     │  │ Agent 3     │     │
 │  │ /dev Add    │  │ /dev next   │  │ /harden     │     │
 │  │ auth system │  │ PEN-42      │  │ (reviewing  │     │
-│  │             │  │             │  │  yesterday's │     │
-│  │ [working]   │  │ [waiting]   │  │  code)      │     │
+│  │ (worktree)  │  │ (worktree)  │  │  code on    │     │
+│  │ [working]   │  │ [waiting]   │  │  main)      │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 │                                                         │
 │  Agent 1: implementing auth (Phase 4, task 3/5)         │
 │  Agent 2: waiting for plan approval                     │
 │  Agent 3: security review found 2 issues, fixing...     │
-│                                                         │
-│  Linear: 3 tasks in progress, 2 in review               │
 └─────────────────────────────────────────────────────────┘
 ```
 
-When agents finish, I switch to wtr to review and land their work:
+### Two Development Flows
 
-```
-wtr → review diff → run tests → land (ff-only merge → push)
-```
+Every project uses one of two flows. Run `/dev-flow` to configure:
 
-### The Project Lifecycle
+**Trunk flow** — Agents work directly on main. Commits land immediately.
+```
+/dev Fix the date parser  →  agent works on main  →  commit  →  push
+```
+Best for solo work, early-stage projects, or repos where multiple agents contribute docs and research (like this one).
 
-Projects follow a natural arc from simple to structured:
+**Worktree flow** — Each agent gets an isolated branch. Review in wtr before landing.
+```
+/dev Add user auth  →  worktree  →  plan  →  implement  →  review in wtr  →  land
+```
+Best once you're running parallel agents or want review before merge. A hook prevents commits on main.
 
-**Early stage** — Work directly on main. Low ceremony. Just describe what you need.
-```
-"Fix the date parser"  →  agent works on main  →  commit  →  push
-```
-
-**Growing** — Move to worktrees as the project develops and parallel work increases.
-```
-/dev Add user auth  →  Linear issue  →  worktree  →  plan  →  implement  →  review in wtr  →  land
-```
-
-**Mature** — Full pipeline with parallel agents in amux, structured review, compounding learning.
-```
-/dev Add webhooks  →  brainstorm  →  plan  →  3 parallel reviewers  →  synthesis critiquer  →  land
-```
-
-Every project I've built — ai-scheduler, wtr, clueless-closet, trade — has gone through this same arc.
+The development pipeline runs the same in both flows — the only difference is where code goes. Projects naturally start on trunk and move to worktree as they grow. `/learn` detects when it's time and suggests the switch.
 
 ## The Development Pipeline
 
-When work goes through the full `/dev` pipeline, here's what happens:
+Every piece of work — feature, bugfix, refactor — goes through the same process. `/dev` orchestrates it end to end:
+
+**Phase 1: Brainstorm** — You and the agent explore the problem together. What are we building? What are the trade-offs? You approve the design before anything gets built.
+
+**Phase 2: Write Plan** — The design becomes a concrete plan with bite-sized tasks. You approve the plan.
+
+**Phase 3: Review Plan** — A staff-engineer-persona agent reviews the plan skeptically. Catches gaps, bad decomposition, and unrealistic assumptions. Autonomous — you're only surfaced if it finds blocking issues.
+
+**Phase 4: Execute** — For each task: implement with TDD, then three reviewers run in parallel (spec compliance, code quality, security). A synthesis critiquer deduplicates findings and routes: PASS, LOCAL_FIX (retry up to 3 times), or KICKBACK (escalate to human). Fully autonomous.
+
+**Phase 5: Stage** — The agent wraps up: reviews its own work, runs tests, squashes into a clean commit. On worktree flow, you review in wtr and land. On trunk flow, the agent commits and pushes.
 
 ```
- Human
+ /dev Add webhook notifications
    │
-   │  /dev Add webhook notifications
    ▼
  ┌─────────────┐
- │  Brainstorm  │  ← human participates, approves design
+ │  Brainstorm  │  ← you participate, approve design
  └──────┬───────┘
         ▼
  ┌─────────────┐
- │  Write Plan  │  ← human approves plan
+ │  Write Plan  │  ← you approve plan
  └──────┬───────┘
         ▼
  ┌──────────────┐
- │ Review Plan  │  ← staff engineer skepticism (autonomous)
+ │ Review Plan  │  ← autonomous staff engineer review
  └──────┬───────┘
         ▼
    For each task:
         │
         ▼
  ┌──────────────┐
- │ Implementer  │  TDD, self-review, functional core architecture
+ │ Implementer  │  TDD, functional core architecture
  └──────┬───────┘
         │
         ├──────────────────┬──────────────────┐
         ▼                  ▼                  ▼
  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
- │    Spec      │   │   Quality   │   │  Security   │  3 reviewers
- │  Reviewer    │   │  Reviewer   │   │  Reviewer   │  in parallel
+ │    Spec      │   │   Quality   │   │  Security   │
+ │  Reviewer    │   │  Reviewer   │   │  Reviewer   │
  └──────┬───────┘   └──────┬──────┘   └──────┬──────┘
         │                  │                  │
         └──────────────────┼──────────────────┘
@@ -118,10 +118,10 @@ When work goes through the full `/dev` pipeline, here's what happens:
       (proposes CLAUDE.md rules)
               │
               ▼
-      Stage for review in wtr
+         Stage + Land
 ```
 
-**Human touchpoints:** I participate during brainstorm and planning. After plan approval, the pipeline runs autonomously. I'm only surfaced if a kickback or blocker occurs. When it's done, I review and land in wtr.
+**You participate during brainstorm and planning. Everything after plan approval is autonomous.** You're only surfaced on kickbacks, blockers, or the final review.
 
 ### Key Principles
 
@@ -135,21 +135,37 @@ When work goes through the full `/dev` pipeline, here's what happens:
 
 ## Skills
 
-7 skills, installed globally via `bash setup.sh`.
+8 skills, installed globally via `bash setup.sh`.
+
+**Start here — the big three cover 90% of daily work:**
 
 | Skill | What it does |
 |-------|-------------|
 | `/dev` | **The central command.** `/dev <description>` runs the full pipeline. `/dev next` picks up a Linear task. `/dev track <note>` captures for later. |
-| `/harden` | **Retroactive quality.** Already wrote code? Run the review pipeline on it without throwing anything away. |
-| `/learn` | **Compounding learning.** Analyze recent work for patterns. Propose CLAUDE.md rules and permission changes to reduce friction. |
+| `/harden` | **Retroactive quality.** Already wrote code that skipped the process? Run design review, spec review, quality, and security on it — fix what's found without throwing anything away. |
+| `/stage` | **Wrap up.** Review, validate, squash into a clean commit. On worktree flow, prepares for wtr landing. Also the final phase of `/dev`. |
+
+**Set up a project:**
+
+| Skill | What it does |
+|-------|-------------|
+| `/dev-flow` | **Configure the flow.** Choose trunk (direct to main) or worktree (isolated branches). Sets up hooks and CLAUDE.md. Run once per project, again to switch. |
+
+**Supporting skills:**
+
+| Skill | What it does |
+|-------|-------------|
+| `/learn` | **Compounding learning.** Analyze recent work for patterns. Propose CLAUDE.md rules and permission changes. Detects when a project should switch flows. |
 | `/brainstorm` | **Thought partner.** Explore ideas before committing to a direction. |
 | `/review-plan` | **Staff engineer review.** Skeptical plan review before execution begins. |
-| `/stage` | **Wrap up.** Review, validate, squash into a clean commit for wtr landing. Also the final phase of `/dev`. |
 | `/tidy` | **Hygiene.** Clean up dead worktrees, stale branches, orphaned Linear tasks. |
 
 ### How to Use
 
 ```bash
+# First time in a project — choose trunk or worktree flow, set up hooks
+/dev-flow
+
 # Full pipeline — brainstorm, plan, review, implement, stage
 /dev Add webhook notifications when deployments complete
 
@@ -174,21 +190,21 @@ When work goes through the full `/dev` pipeline, here's what happens:
 
 ### Internal Pipeline Components
 
-The `/dev` and `/harden` pipelines dispatch subagents using instructions from `lib/`:
+The `/dev` and `/harden` pipelines dispatch subagents using prompt templates from `lib/`:
 
 | Component | Purpose |
 |-----------|---------|
 | `lib/security-reviewer.md` | Read-only security audit instructions for the security review subagent |
 | `lib/synthesis-critiquer.md` | Deduplication, contradiction resolution, and routing logic for the synthesis subagent |
 
-These are not user-facing skills. They're prompt templates that `/dev` and `/harden` read and inline into subagent dispatches.
+These are not user-facing skills. They're read by `/dev` and `/harden` and inlined into subagent prompts.
 
 ### Dependencies
 
 - **[amux](https://github.com/byoungs/amux)** — Terminal multiplexer for parallel agents
-- **[wtr](https://github.com/byoungs/wtr)** — Worktree review TUI for reviewing and landing agent work
+- **[wtr](https://github.com/byoungs/wtr)** — Worktree review TUI for reviewing and landing (worktree flow)
 - **Linear MCP server** — Task coordination (`/dev`, `/dev next`, `/dev track`, `/tidy`)
-- **Git worktrees** — `/dev` and `/stage` use `EnterWorktree`/`ExitWorktree`
+- **Git worktrees** — `/dev` and `/stage` use `EnterWorktree`/`ExitWorktree` (worktree flow)
 - **Superpowers plugin** — TDD, verification, code review templates
 
 ## Setup
@@ -197,7 +213,7 @@ These are not user-facing skills. They're prompt templates that `/dev` and `/har
 bash setup.sh
 ```
 
-Symlinks skills and the global `CLAUDE.md` into `~/.claude/` so they're available in every project.
+Symlinks skills and the global `CLAUDE.md` into `~/.claude/` so they're available in every project. Then run `/dev-flow` in each project to configure trunk or worktree flow.
 
 ## Best Practices for All Projects
 
@@ -205,9 +221,12 @@ Standards across all repos in `~/src/`. Each project's `CLAUDE.md` should refere
 
 ### Project Configuration
 
-Skills read project context from each project's `CLAUDE.md`:
+Skills read project context from each project's `CLAUDE.md`. `/dev-flow` helps set this up:
 
 ```markdown
+## Dev Flow
+Flow: worktree
+
 ## Linear
 - Workspace: your-workspace
 - Team: Your Team (key: XX)
@@ -231,13 +250,30 @@ Skills read project context from each project's `CLAUDE.md`:
 
 ### Testing & Architecture
 
-- **Functional core + imperative shell.** Pure business logic in a core layer; side effects in a thin shell.
+**Design for testability.** Use hexagonal architecture (ports and adapters) or functional core / imperative shell so that domain logic is testable without mocks:
+
+- **Domain layer** — pure business logic, no dependencies. Tests need zero mocks.
+- **Application layer** — use cases orchestrate domain logic through ports (interfaces). Tests mock only ports.
+- **Infrastructure layer** — adapters implement ports (DB, APIs, filesystem). Use in-memory fakes for integration tests.
+
+**Testing rules for agents:**
 - **Prefer fakes over mocks.** `InMemoryUserRepo` > `mock(UserRepo)`.
 - **Mock at system boundaries only.** Never mock the unit under test.
-- **Assert on outputs, not call counts.**
-- **Separate test-writing from implementation when possible.**
+- **Assert on outputs, not call counts.** Tests verify behavior, not implementation.
+- **Separate test-writing from implementation when possible.** Same-context tests mirror implementation, not intent.
 
-See [Testing & Architecture research](research/testing-architecture-2026-03-28.md) for the data behind these rules.
+AI agents over-mock by 36% vs humans ([arXiv study](https://arxiv.org/html/2602.00409v1)). These architecture and testing rules are the primary defense. See [Testing & Architecture research](research/testing-architecture-2026-03-28.md) for the full data.
+
+### Hooks
+
+Hooks enforce behavior that prompt instructions alone can't guarantee. `/dev-flow` configures them automatically:
+
+| Flow | Hooks installed |
+|------|----------------|
+| **Both** | Auto-format after file writes, auto-test after commits, prevent amending pushed commits |
+| **Worktree** | + Prevent all commits on main (forces worktree usage) |
+
+Run `/dev-flow` in any project to set up hooks. Run it again to switch flows as the project evolves.
 
 ## Research & Design
 

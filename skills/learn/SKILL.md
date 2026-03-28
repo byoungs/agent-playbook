@@ -56,6 +56,20 @@ $ARGUMENTS
 - Are there workflow friction points that a new skill or rule could prevent?
 - Should any heuristics be added to plan review?
 
+### D. Flow Advancement Detection
+
+Check the project's CLAUDE.md for `## Dev Flow`. If present, look for signs the project
+has outgrown its current flow:
+
+- **Trunk → Worktree signals:**
+  - Multiple agents running in this project (check `git worktree list` — if worktrees
+    exist but flow is trunk, the flow should advance)
+  - Merge conflicts or stepped-on changes in recent git history
+  - Project has grown past a few files and has real test coverage
+
+If you detect a mismatch, recommend: "This project is on trunk flow but [evidence].
+Consider running `/dev-flow worktree` to switch to isolated branches."
+
 ## Application Rules
 
 You REPORT proposed changes. Present them to the human for approval.
