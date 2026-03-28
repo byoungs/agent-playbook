@@ -28,6 +28,20 @@
 - **Production secrets go in `fly secrets set`**, never in `.env`. Dev and prod MUST use separate credentials.
 - **For new projects:** Create `dev.env` (in git) + `.env` (gitignored) + `dev.sh` that loads both.
 
+## Testing & Architecture
+
+### Architecture for Testability
+- **Structure new code as functional core + imperative shell.** Pure business logic (no dependencies, no side effects) in a core layer. Side effects (database, APIs, filesystem) in a thin shell layer. This makes domain logic testable without mocks by design.
+- **When using hexagonal/ports-and-adapters:** domain tests need zero mocks, application tests mock only ports (well-defined interfaces), integration tests use in-memory fakes instead of mocks.
+
+### Testing Rules
+- **Prefer fakes (in-memory implementations) over mocks** for complex interfaces. A fake `InMemoryUserRepository` is more trustworthy than `mock(UserRepository)`.
+- **Mock at system boundaries only.** Never mock the unit under test. Never mock internal collaborators within the same layer.
+- **Assert on outputs, not call counts.** Tests should verify behavior ("this function returns X given Y") not implementation ("this function called Z exactly once").
+- **Run all tests after writing them.** If tests fail, fix the implementation, not the tests. Never delete or disable a failing test to make it "pass."
+- **Avoid test proliferation.** Fewer focused tests beat many shallow tests. Aim for maximum 10 tests per file unless the function has genuinely complex branching.
+- **Separate test-writing from implementation when possible.** Tests written in the same context as implementation tend to mirror the implementation rather than test intent. When using TDD with subagents, the test-writing agent should have zero knowledge of the implementation.
+
 ## Learned Patterns
 
 - When editing skill files or pipeline definitions, verify that all labels, counts, and behavioral descriptions match the actual structure. After changing any enum, verdict set, or list of options, search for every reference to the old value across all files in the skill directory.

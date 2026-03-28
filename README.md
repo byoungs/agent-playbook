@@ -10,14 +10,15 @@ Reusable Claude Code skills for agent coordination across all projects. Managed 
 | `/name-agent` | Get a session number (1-9) for agent identity and port isolation |
 | `/track` | Quick-capture observations, bugs, ideas → Linear backlog items |
 | `/brainstorm` | Pure thought partner — explore vague ideas without producing artifacts |
+| `/now` | Create a Linear task from a description, claim it, enter a worktree, and start planning |
 | `/next` | Pick up the next task from Linear, plan, execute in a worktree |
-| `/ship` | Review, validate, commit, push, merge, close — with completeness checks |
+| `/stage` | Review, validate, squash into a single rebased commit for local review and ff-only merge |
 | `/team-dash` | One-shot team dashboard — active agents, health checks, problems |
 
 ### Dependencies
 
-- **Linear MCP server** — Required for `/track`, `/next`, `/ship`, `/team-dash`. The skills read Linear configuration (team, project) from each project's `CLAUDE.md`.
-- **Git worktrees** — `/next` and `/ship` use Claude Code's `EnterWorktree`/`ExitWorktree` for safe parallel work.
+- **Linear MCP server** — Required for `/track`, `/now`, `/next`, `/stage`, `/team-dash`. The skills read Linear configuration (team, project) from each project's `CLAUDE.md`.
+- **Git worktrees** — `/now`, `/next`, `/stage`, and `/build-feature` use Claude Code's `EnterWorktree`/`ExitWorktree` for safe parallel work.
 
 ## Setup
 
@@ -76,6 +77,9 @@ Research and architecture for the enhanced agentic pipeline — parallel reviews
 - [ClawMux Analysis](research/clawmux-analysis.md) — Deep dive on the 7-agent pipeline orchestrator with kickback mechanism
 - [Boris Cherny's Workflow](research/boris-cherny-workflow.md) — How the Claude Code creator uses Claude Code (20-30 PRs/day)
 - [Retry Limits](research/retry-limits.md) — Expert consensus on loop/retry limits (the magic number is 3)
+- [Brainstorm Session](research/2026-03-27-brainstorm-session.md) — Full session summary: how we got here, every design decision and why, plan review findings, open questions
+- [Expert Review](research/expert-review-2026-03-28.md) — Critical assessment of pipeline against latest expert thinking (Boris, Beck, Fowler, Willison, Yegge, Anthropic, Tornhill)
+- [Testing & Architecture](research/testing-architecture-2026-03-28.md) — How hexagonal architecture and functional core/imperative shell fix AI's mock problem; five-layer defense stack for test quality
 
 ### Design
 - [Pipeline Architecture](design/pipeline-architecture.md) — The enhanced pipeline: parallel reviews, synthesis critiquer, kickbacks, compounding learning

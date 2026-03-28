@@ -53,6 +53,9 @@ The only thing worse than a false kickback is shipping broken code.
 - Security CRITICAL finding -> always at least LOCAL_FIX, consider KICKBACK to DESIGN
 - Spec mismatch (built wrong thing) -> KICKBACK to PLANNING
 - Repeated same-category finding from previous cycle -> KICKBACK (local fixes aren't working)
+- Test quality issues (over-mocking, mocking the unit under test, tests coupled to implementation
+  details, tests asserting on call counts instead of outputs) -> LOCAL_FIX. Tests that don't test
+  real behavior are as bad as no tests — they give false confidence.
 
 ## Retry Limit Awareness
 

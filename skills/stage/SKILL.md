@@ -5,7 +5,7 @@ disable-model-invocation: true
 argument-hint: "[optional: issue ID like PEN-55]"
 ---
 
-## Ship the current task
+## Stage the current task
 
 Wrap up the current worktree work: review, validate, squash into a single commit rebased on main, and hand off for Brian's local review. Does NOT merge to main — Brian does that.
 
@@ -14,7 +14,7 @@ Wrap up the current worktree work: review, validate, squash into a single commit
 ### Step 1: Verify you're in a worktree
 
 1. Run `git status` and check the current branch — you should NOT be on main
-2. If you're on main, tell the user there's nothing to ship and stop
+2. If you're on main, tell the user there's nothing to stage and stop
 
 ### Step 2: Code review
 
@@ -40,7 +40,7 @@ If anything fails, **fix it and re-run**. Max 3 attempts, then stop and report w
 
 ### Step 4: Completeness check
 
-Before shipping, verify the work is actually done:
+Before staging, verify the work is actually done:
 
 1. **If a Linear issue ID was provided or can be inferred from the branch name**, fetch the issue and check:
    - Does the issue description have acceptance criteria? Are they all met?
@@ -49,7 +49,7 @@ Before shipping, verify the work is actually done:
 
 2. **Trace the feature end-to-end.** Ask: "does this actually work for the human at the end of it?" If data is collected, where does it go? If a button triggers an action, does it reach its destination?
 
-3. **If work appears incomplete**, stop and tell the user what's missing. Offer to continue implementing or ship what's done with a note.
+3. **If work appears incomplete**, stop and tell the user what's missing. Offer to continue implementing or stage what's done with a note.
 
 ### Step 5: Prepare a single commit
 

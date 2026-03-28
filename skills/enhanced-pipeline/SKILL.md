@@ -75,6 +75,20 @@ Include:
   under `~/.claude/plugins/cache/`. If the file is not found, stop and tell the human
   — the superpowers plugin may need to be reinstalled. Read this file and use its
   structure, which already includes TDD and self-review instructions.
+- The following testing rules (paste verbatim into the implementer prompt):
+
+  **Testing Rules:**
+  - Structure code as functional core (pure logic, no dependencies) + imperative shell
+    (side effects). Domain logic should be testable without any mocks.
+  - Prefer fakes (in-memory implementations) over mocks. A fake `InMemoryUserRepo` is
+    more trustworthy than `mock(UserRepo)`.
+  - Mock at system boundaries only. Never mock the unit under test. Never mock internal
+    collaborators within the same layer.
+  - Assert on outputs, not call counts. Tests verify behavior ("returns X given Y"),
+    not implementation ("called Z exactly once").
+  - Run all tests after writing them. If tests fail, fix the implementation, not the
+    tests. Never delete or disable a failing test.
+  - Keep tests focused. Maximum ~10 tests per file unless genuinely complex branching.
 - If this is a retry after LOCAL_FIX: include the critiquer's prioritized findings list
   and say "This is retry N/3. The previous attempt had these issues: [findings]. Fix them."
 
@@ -108,6 +122,12 @@ Use THREE Agent tool calls in a SINGLE message to run them in parallel:
   BASE_SHA (commit before this task — use `git rev-parse HEAD~1`),
   HEAD_SHA (current commit — use `git rev-parse HEAD`),
   DESCRIPTION (task summary).
+- Additionally instruct the reviewer to check test quality:
+  "In addition to standard code quality, evaluate test quality: Are tests mocking
+  internal collaborators instead of using fakes? Are tests asserting on call counts
+  instead of outputs? Are tests tightly coupled to implementation details that would
+  break on refactoring? Flag any tests that mock the unit under test or mock within
+  the same layer rather than at system boundaries."
 
 **Agent 3 — Security Reviewer:**
 - `subagent_type: "general-purpose"`
