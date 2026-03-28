@@ -215,6 +215,29 @@ bash setup.sh
 
 Symlinks skills and the global `CLAUDE.md` into `~/.claude/` so they're available in every project. Then run `/dev-flow` in each project to configure trunk or worktree flow.
 
+## Testing This Repo
+
+This is a knowledge repo (markdown, skills, research), not a code project. Its "tests" are consistency checks: does the README match the actual skills? Do internal references point to real files?
+
+```bash
+make test
+```
+
+This checks a **consistency stamp** (`.consistency-stamp`) written by Claude during `/harden` or `/stage`. The stamp records the commit hash when consistency was last verified. If the stamp matches HEAD, the check passes. If it's stale or missing:
+
+```
+FAIL: Consistency stamp is stale.
+      Run /harden to re-validate after your changes.
+```
+
+The consistency check validates:
+- All skills in `skills/` are listed in the README
+- No README references to skills that don't exist
+- Internal references (`lib/` files) are valid
+- No stale references to deleted skills
+
+This bridges AI-powered validation with a deterministic CLI gate — `/stage` and wtr's `land` command can call `make test` and get a pass/fail.
+
 ## Best Practices for All Projects
 
 Standards across all repos in `~/src/`. Each project's `CLAUDE.md` should reference or extend these.

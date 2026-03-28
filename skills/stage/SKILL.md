@@ -36,6 +36,14 @@ Run the project's build and test commands. Check CLAUDE.md for project-specific 
 - **Mixed (Go + React):** Run both backend and frontend checks
 - **Makefile:** If `make build` and `make test` exist, prefer those
 
+**For knowledge repos (like agent-playbook):** If the project uses a consistency stamp
+(`scripts/check-stamp.sh` exists), run the consistency check:
+1. Verify all skills in `skills/` are listed in README.
+2. Verify no README references to skills that don't exist.
+3. Verify `lib/` files referenced by skills exist.
+4. If all pass, write `.consistency-stamp` with current HEAD hash, timestamp, and "PASS".
+5. Then run `make test` to confirm the stamp is valid.
+
 If anything fails, **fix it and re-run**. Max 3 attempts, then stop and report what's broken.
 
 ### Step 4: Completeness check

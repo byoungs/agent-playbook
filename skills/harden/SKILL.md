@@ -73,13 +73,33 @@ Set retry count to 0/3 and kickback counts to 0.
 Run compounding learning (read `~/.claude/skills/learn/SKILL.md` and paste into subagent).
 Validate and apply any proposed CLAUDE.md additions.
 
-## Step 7: Summary
+## Step 7: Consistency Check
+
+If the project has a `Makefile` with a `test` target, run `make test`.
+
+If the project has a `scripts/check-stamp.sh` (like agent-playbook), run the consistency
+check and write the stamp:
+
+1. Verify all skills in `skills/` are listed in README.
+2. Verify no README references to skills that don't exist.
+3. Verify `lib/` files referenced by skills exist.
+4. Verify no stale references to deleted skills.
+5. If all checks pass, write `.consistency-stamp`:
+   ```
+   <git HEAD hash>
+   <ISO 8601 timestamp>
+   PASS
+   ```
+6. If checks fail, fix the issues and re-check. Report anything you can't fix.
+
+## Step 8: Summary
 
 Present the final status:
 - What was reviewed
 - Review cycles and verdicts
 - Any fixes applied
 - Any CLAUDE.md patterns learned
+- Consistency check result
 - Whether the code is ready to stage/merge
 
 ## Key Difference from /dev
