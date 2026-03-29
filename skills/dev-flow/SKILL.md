@@ -34,71 +34,66 @@ If `$ARGUMENTS` is "trunk" or "worktree", skip the prompt and use that directly.
 1. Read CLAUDE.md. If `## Build & Test` section is missing, ask the user for their
    build and test commands and add the section.
 
-2. Configure auto-format hook in `.claude/settings.json`:
-   ```json
-   {
-     "hooks": {
-       "PostToolUse": [
-         {
-           "matcher": "Write|Edit",
-           "hook": "Run the project formatter if one exists (check CLAUDE.md, package.json, or Makefile for format/lint commands)"
-         }
-       ]
-     }
-   }
-   ```
+2. Write `.claude/settings.json` with hooks. **IMPORTANT:** Hooks must use the correct
+   format — each entry has a `matcher` string and a `hooks` array of objects with
+   `type` and `command` fields. Do NOT use a bare `"hook"` string — that is invalid.
 
-3. Configure auto-test hook:
-   ```json
-   {
-     "hooks": {
-       "PostToolUse": [
-         {
-           "matcher": "Bash(git commit*)",
-           "hook": "Run the project's test command from CLAUDE.md Build & Test section. Report results but don't block the commit."
-         }
-       ]
-     }
-   }
-   ```
+   **Both flows get these hooks:**
 
-4. Prevent amending pushed commits:
    ```json
    {
      "hooks": {
        "PreToolUse": [
          {
            "matcher": "Bash(git commit --amend*)",
-           "hook": "Check if HEAD has been pushed to origin (compare HEAD against origin/current-branch). If HEAD is already on origin, block with: 'This commit has already been pushed. Create a new commit instead of amending.' Exit code 2 to block."
+           "hooks": [
+             {
+               "type": "command",
+               "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); remote_head=$(git rev-parse origin/$branch 2>/dev/null); local_head=$(git rev-parse HEAD 2>/dev/null); if [ \"$remote_head\" = \"$local_head\" ]; then echo 'This commit has already been pushed. Create a new commit instead of amending.' && exit 2; fi"
+             }
+           ]
+         }
+       ],
+       "PostToolUse": [
+         {
+           "matcher": "Write|Edit",
+           "hooks": [
+             {
+               "type": "command",
+               "command": "if [ -f Makefile ] && grep -q '^fmt:' Makefile; then make fmt 2>/dev/null; fi"
+             }
+           ]
          }
        ]
      }
    }
    ```
 
-6. If `dev.env` doesn't exist and the project has code, offer to create:
+3. If `dev.env` doesn't exist and the project has code, offer to create:
    - `dev.env` (in git) with sensible defaults
    - `.env` (gitignored) for secrets
    - Add `.env` to `.gitignore` if not already there
 
-7. If `## Linear` doesn't exist in CLAUDE.md, ask if this project uses Linear
+4. If `## Linear` doesn't exist in CLAUDE.md, ask if this project uses Linear
    and add the section if yes.
 
 ### Worktree flow only (in addition to the above)
 
-8. Add a hook to prevent ALL commits on main (not just amend — any commit):
+5. Add a PreToolUse hook to prevent ALL commits on main:
+
    ```json
    {
-     "hooks": {
-       "PreToolUse": [
-         {
-           "matcher": "Bash(git commit*)",
-           "hook": "Check if on main branch. If yes, block with: 'Do not commit directly to main. Use EnterWorktree first, or run /dev to start the pipeline.' Exit code 2 to block."
-         }
-       ]
-     }
+     "matcher": "Bash(git commit*)",
+     "hooks": [
+       {
+         "type": "command",
+         "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ]; then echo 'Do not commit directly to main. Use EnterWorktree first, or run /dev to start the pipeline.' && exit 2; fi"
+       }
+     ]
    }
    ```
+
+   Add this to the `PreToolUse` array alongside the amend-protection hook.
 
 9. Add to CLAUDE.md:
    ```markdown
