@@ -42,6 +42,9 @@
 - **Avoid test proliferation.** Fewer focused tests beat many shallow tests. Aim for maximum 10 tests per file unless the function has genuinely complex branching.
 - **Separate test-writing from implementation when possible.** Tests written in the same context as implementation tend to mirror the implementation rather than test intent. When using TDD with subagents, the test-writing agent should have zero knowledge of the implementation.
 
+## Code Quality
+- **NEVER suppress, disable, or ignore warnings.** No `#[allow(...)]`, `// nolint`, `// eslint-disable`, `@SuppressWarnings`, `#pragma warning(disable)`, `_ = err`, or equivalent in any language. Fix the root cause. If asked to "fix warnings," that means fix the code that causes them, not silence the compiler.
+
 ## Learned Patterns
 
 - When editing skill files or pipeline definitions, verify that all labels, counts, and behavioral descriptions match the actual structure. After changing any enum, verdict set, or list of options, search for every reference to the old value across all files in the skill directory.
