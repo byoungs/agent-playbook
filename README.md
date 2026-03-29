@@ -298,6 +298,19 @@ Hooks enforce behavior that prompt instructions alone can't guarantee. `/dev-flo
 
 Run `/dev-flow` in any project to set up hooks. Run it again to switch flows as the project evolves.
 
+### Propagating Updates to Running Agents
+
+When you update skills, rules, or patterns in this repo, running agents pick up changes through **compaction**:
+
+1. Update agent-playbook and commit (skills and CLAUDE.md are symlinked — changes are on disk immediately)
+2. In a running agent session, type `/compact`
+3. Claude Code re-reads CLAUDE.md fresh from disk — all new rules and patterns are now active
+4. A global PostCompact hook confirms the refresh
+
+New sessions always get the latest content at startup. Long-running sessions get updates on natural auto-compaction (~95% context) or when you manually `/compact`.
+
+**Note:** Skill *content* updates on compaction, but the skill *list* (available `/slash-commands`) loads at session start. Added or renamed skills need a new session.
+
 ## Research & Design
 
 The methodology above is backed by research into what the best practitioners are doing.

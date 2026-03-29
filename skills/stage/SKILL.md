@@ -64,10 +64,7 @@ Before staging, verify the work is actually done:
 The goal is **one clean commit** on a branch that is up-to-date with main, ready for `git merge --ff-only`.
 
 1. Stage all changes individually with `git add <file>`. NEVER use `git add .` or `git add -A`
-2. Commit (or amend into a single commit if there are multiple). Write a message following the project's recent commit style. Include Linear issue ID. End with:
-   ```
-   Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
-   ```
+2. Commit (or amend into a single commit if there are multiple). Write a message following the project's recent commit style. Include Linear issue ID.
 3. Rebase onto main: `git rebase main` — resolve any conflicts
 4. Verify the branch has exactly **1 commit** ahead of main: `git log --oneline main..HEAD`
    - If more than 1 commit, squash with `git rebase -r main` using fixup
