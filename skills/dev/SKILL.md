@@ -193,18 +193,22 @@ Post Linear comment after each task: `"Task N/M complete: [name]. Review: [cycle
 When all tasks complete:
 
 1. Run compounding learning one final time with all accumulated findings.
-2. Review, validate, and prepare a single clean commit:
+2. **Run `make validate`** (or `make test` if no validate target exists). This is the same
+   gate wtr uses during `land`. If it fails, fix the issue and re-run. Do NOT hand off
+   work that fails `make validate` — Brian should never see a validation failure in wtr.
+3. Review, validate, and prepare a single clean commit:
    - Stage files individually (never `git add .`)
    - Squash into one commit with issue ID
    - Rebase onto main
-   - Run project build/test commands
-3. Post Linear comment with session summary.
-4. Move Linear issue to "In Review".
-5. Tell the human: worktree path, what changed, what needs attention.
+   - **Run `make validate` again after rebase.** Rebasing can introduce failures.
+4. Post Linear comment with session summary.
+5. Move Linear issue to "In Review".
+6. Tell the human: worktree path, what changed, what needs attention.
 
-Brian will review in wtr and land with `l` (ff-only merge → test → push).
+Brian will review in wtr and land with `l` (ff-only merge → validate → push).
 
-**Do NOT merge to main. Do NOT push to origin. Do NOT deploy.**
+**Do NOT merge to main. Do NOT push to origin. Do NOT deploy.
+Do NOT hand off work that fails `make validate`.**
 
 ## Human Touchpoints
 

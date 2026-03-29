@@ -26,15 +26,13 @@ Review all uncommitted + committed-but-unmerged changes as a senior tech lead. F
 
 **Fix issues immediately.** Don't just report them — edit the code. After fixing, re-review your own fixes.
 
-### Step 3: Run checks
+### Step 3: Run `make validate`
 
-Run the project's build and test commands. Check CLAUDE.md for project-specific commands. Common patterns:
+**Run `make validate`.** If no validate target exists, fall back to `make test`. This is
+the same gate wtr uses during `land` — if it fails here, it will fail there. **Do NOT
+hand off work that fails `make validate`.**
 
-- **Go:** `go build ./...` and `go test ./...`
-- **Python:** `make typecheck` and `make test` (or `poetry run pytest`)
-- **Node/TypeScript:** `npx tsc --noEmit` and `npm test`
-- **Mixed (Go + React):** Run both backend and frontend checks
-- **Makefile:** If `make build` and `make test` exist, prefer those
+If the Makefile doesn't exist, check CLAUDE.md for project-specific build/test commands.
 
 **For knowledge repos (like agent-playbook):** If the project uses a consistency stamp
 (`scripts/check-stamp.sh` exists), run the consistency check:
@@ -68,7 +66,8 @@ The goal is **one clean commit** on a branch that is up-to-date with main, ready
 3. Rebase onto main: `git rebase main` — resolve any conflicts
 4. Verify the branch has exactly **1 commit** ahead of main: `git log --oneline main..HEAD`
    - If more than 1 commit, squash with `git rebase -r main` using fixup
-5. Run checks one more time after rebase to make sure nothing broke
+5. **Run `make validate` (or `make test`) again after rebase.** Rebasing can introduce failures.
+   This must pass before handing off. Brian should never see a validation failure in wtr.
 
 ### Step 6: Update Linear
 
@@ -84,9 +83,7 @@ Tell the user:
 - The Linear issue status
 - Any areas that deserve extra attention during review
 
-Brian will:
-1. Review the commit in VS Code
-2. `git merge --ff-only <branch>` on main
-3. Run `make test`, `make validate`, `git push`, and `make deploy` from his terminal
+Brian will review in wtr and land with `l` (ff-only merge → validate → push).
 
-**Do NOT merge to main. Do NOT push to origin. Do NOT deploy.**
+**Do NOT merge to main. Do NOT push to origin. Do NOT deploy.
+Do NOT hand off work that fails `make validate`.**

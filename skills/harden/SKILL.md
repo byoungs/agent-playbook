@@ -73,9 +73,11 @@ Set retry count to 0/3 and kickback counts to 0.
 Run compounding learning (read `~/.claude/skills/learn/SKILL.md` and paste into subagent).
 Validate and apply any proposed CLAUDE.md additions.
 
-## Step 7: Consistency Check
+## Step 7: Validate
 
-If the project has a `Makefile` with a `test` target, run `make test`.
+**Run `make validate`** (or `make test` if no validate target). This is the same gate
+wtr uses during `land`. If it fails, fix the issue and re-run. Do NOT declare work
+ready if `make validate` fails.
 
 If the project has a `scripts/check-stamp.sh` (like agent-playbook), run the consistency
 check and write the stamp:
