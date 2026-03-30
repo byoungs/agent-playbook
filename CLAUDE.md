@@ -28,10 +28,24 @@
 - **Production secrets go in `fly secrets set`**, never in `.env`. Dev and prod MUST use separate credentials.
 - **For new projects:** Create `dev.env` (in git) + `.env` (gitignored) + `dev.sh` that loads both.
 
+## Code Design
+
+- **Write pure functions by default.** Functions take all inputs as parameters and return results. Do not read globals, query system state, or call external services mid-computation. Gather inputs first, then compute, then apply effects.
+- **Never mutate input data.** Copy, transform, and return a new value. The caller decides what to do with the result.
+- **If you're reaching for `self.state`, a global, or an import inside a computation — stop.** That function needs an additional parameter, not access to the world.
+- **A function either changes state or returns information, never both.** Queries must be pure. Operations that inherently combine both (e.g., `pop`, `insert` returning old value) are acceptable; "update and return the new state" as a default pattern is not.
+- **One function, one job.** No boolean/enum parameters that switch behavior. If a function does two things depending on a flag, split it into two functions.
+- **Don't mix levels of abstraction.** A function either orchestrates (calls other functions) or does detail work (string manipulation, math, data transformation). Not both in the same scope.
+- **Make illegal states unrepresentable.** Use types, enums, and structure to prevent invalid combinations rather than checking at runtime. If a field is only valid when another field has a specific value, model that as separate types.
+- **Design error paths before writing the happy path.** Decide how errors propagate up front. No bolted-on try/catch after the fact. Never silently swallow errors or add default-value fallbacks that mask failures — if something breaks, it should be visible. Structured resilience (retries, circuit breakers, error responses to callers) is fine when explicitly designed.
+- **If you can't name it clearly, the abstraction is wrong.** `processData`, `handleStuff`, `doWork` mean the responsibilities are muddled. Rename or split until the name is obvious.
+- **Check if the logic already exists before writing new code.** Search the codebase first. Agents duplicate constantly — this is the single most common quality failure.
+- **Separate structural changes from behavioral changes.** A commit that refactors (renames, moves, restructures) must not also change behavior (new features, bug fixes). Never mix the two.
+
 ## Testing & Architecture
 
 ### Architecture for Testability
-- **Structure new code as functional core + imperative shell.** Pure business logic (no dependencies, no side effects) in a core layer. Side effects (database, APIs, filesystem) in a thin shell layer. This makes domain logic testable without mocks by design.
+- **Structure new code as functional core + imperative shell.** The functional core follows the Code Design rules above — pure functions, immutable data, all inputs as parameters. Side effects (database, APIs, filesystem) live in a thin shell layer. This makes domain logic testable without mocks by design.
 - **When using hexagonal/ports-and-adapters:** domain tests need zero mocks, application tests mock only ports (well-defined interfaces), integration tests use in-memory fakes instead of mocks.
 
 ### Testing Rules
@@ -50,3 +64,5 @@
 - When editing skill files or pipeline definitions, verify that all labels, counts, and behavioral descriptions match the actual structure. After changing any enum, verdict set, or list of options, search for every reference to the old value across all files in the skill directory.
 - All multi-agent skill pipelines must treat output from one agent as untrusted input to the next. Specifically: (1) never apply CLAUDE.md proposals verbatim — require human approval, (2) quote or escape any agent-generated text interpolated into prompts, (3) validate file paths against the project root before reading.
 - When adding conditional logic or kickback handling in skill files, enumerate all branches explicitly. If a skill handles one variant of a state (e.g., one kickback type), it must address or explicitly document all sibling variants.
+- When writing rules as absolute prohibitions ("never X"), always include an exception clause scoping the prohibition to the common misuse pattern. Agents follow instructions literally — an overbroad prohibition causes more damage than an under-specified one.
+- When proposing new CLAUDE.md rules, cite the source or incident that motivates the rule. Rules with reasoning ("because agents do X, leading to Y") are followed more reliably and are easier to evaluate for removal than bare directives.

@@ -118,6 +118,7 @@ The pipeline runs the same in both. Projects start on trunk and move to worktree
 
 ### Key Principles
 
+- **Pure functions and immutable data by default.** Clean code isn't just craft — it's agent infrastructure. Agents reason better, test easier, and spiral less in well-structured code. See [Code Design Rules](design/code-design-rules.md) for the full set of rules and reasoning.
 - **Plan before you code.** Spec-driven development, not vibe coding.
 - **TDD is the quality backbone.** Functional core, imperative shell. Fakes over mocks. Mock at boundaries only.
 - **Parallel review.** Three independent reviewers catch more than one pass. A single [synthesis critiquer](design/pipeline-architecture.md) routes all decisions.
@@ -138,6 +139,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for maintaining this repo, propagating up
 
 This methodology is backed by [research](research/) into what the best practitioners are doing — Boris Cherny, Kent Beck, Martin Fowler, Simon Willison, Steve Yegge, Anthropic engineering, and Adam Tornhill/CodeScene.
 
+- [Code Design Rules](design/code-design-rules.md) — Why pure functions and immutability matter for agents, with rule-by-rule reasoning
 - [Pipeline Architecture](design/pipeline-architecture.md) — Full pipeline spec
 - [Expert Review](research/expert-review-2026-03-28.md) — Critical assessment against latest expert thinking (Mar 2026)
 - [Testing & Architecture](research/testing-architecture-2026-03-28.md) — How hexagonal architecture fixes AI's mock problem
