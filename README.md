@@ -12,12 +12,12 @@ I run multiple Claude Code agents in parallel across projects using [amux](https
 ┌──────────────────────────────────────────────────────────────┐
 │  amux                                                        │
 │                                                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ trade/       │  │ wtr/         │  │ agent-       │       │
-│  │ /dev Add     │  │ /dev Fix     │  │ playbook/    │       │
-│  │ options API  │  │ rebase bug   │  │ /harden      │       │
-│  │ [working]    │  │ [waiting]    │  │ [working]    │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │
+│  │ trade/       │  │ wtr/         │  │ agent-       │        │
+│  │ /dev Add     │  │ /dev Fix     │  │ playbook/    │        │
+│  │ options API  │  │ rebase bug   │  │ /harden      │        │
+│  │ [working]    │  │ [waiting]    │  │ [working]    │        │
+│  └──────────────┘  └──────────────┘  └──────────────┘        │
 │                                                              │
 │  trade: implementing options pricing (task 3/5)              │
 │  wtr: waiting for plan approval                              │
@@ -61,13 +61,13 @@ Every piece of work goes through the same process. `/dev` orchestrates it:
 
 ```
  /dev Add webhook notifications
-   │
-   ▼
- ┌─────────────┐
+        │
+        ▼
+ ┌──────────────┐
  │  Brainstorm  │  ← you participate, approve design
  └──────┬───────┘
         ▼
- ┌─────────────┐
+ ┌──────────────┐
  │  Write Plan  │  ← you approve plan
  └──────┬───────┘
         ▼
@@ -84,23 +84,23 @@ Every piece of work goes through the same process. `/dev` orchestrates it:
         │
         ├──────────────────┬──────────────────┐
         ▼                  ▼                  ▼
- ┌─────────────┐   ┌─────────────┐   ┌─────────────┐
- │    Spec      │   │   Quality   │   │  Security   │
- │  Reviewer    │   │  Reviewer   │   │  Reviewer   │
- └──────┬───────┘   └──────┬──────┘   └──────┬──────┘
+ ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+ │    Spec     │    │   Quality   │    │  Security   │
+ │  Reviewer   │    │  Reviewer   │    │  Reviewer   │
+ └──────┬──────┘    └──────┬──────┘    └──────┬──────┘
         │                  │                  │
         └──────────────────┼──────────────────┘
                            ▼
                  ┌───────────────────┐
                  │    Synthesis      │  deduplicates, resolves
                  │    Critiquer      │  contradictions, routes
-                 └────────┬─────────┘
-                          │
-              ┌───────────┼───────────┐
-              ▼           ▼           ▼
-            PASS      LOCAL_FIX    KICKBACK
-              │       (max 3,     (to human)
-              │        retry)
+                 └─────────┬─────────┘
+                           │
+              ┌────────────┼────────────┐
+              ▼            ▼            ▼
+             PASS      LOCAL_FIX    KICKBACK
+              │         (max 3,    (to human)
+              │          retry)
               ▼
         Next task → ... → Stage + Land
 ```
