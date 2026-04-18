@@ -70,7 +70,7 @@ The goal is **exactly one commit ahead of main**, up-to-date, ready for `git mer
    - If 2+ commits: squash failed. Re-run step 3.
    - If 1 commit: correct. Proceed.
 5. **Run validation again after rebase.** Rebasing can introduce failures.
-6. **Re-rebase right before handoff.** Main may have advanced during the session via parallel agents or manual commits. Run `git rebase main` again immediately before Step 7 and re-verify exactly 1 commit ahead. A stale branch surfaces new commits' files as `deleted` in `wtr`; this rebase fixes that.
+6. **Re-rebase right before handoff.** Main may have advanced during the session via parallel agents or manual commits. Run `git rebase main` again immediately before Step 7 and re-verify exactly 1 commit ahead. Re-run validation if conflicts had to be resolved. A stale branch surfaces new commits' files as `deleted` in `wtr`; this rebase fixes that.
 
 Write the commit message following the project's recent commit style (check `git log --oneline -10` on main). Include Linear issue ID if available.
 

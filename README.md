@@ -84,10 +84,10 @@ Every piece of work goes through the same process. `/dev` orchestrates it:
         │
         ├──────────────────┬──────────────────┐
         ▼                  ▼                  ▼
- ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
- │    Spec     │    │   Quality   │    │  Security   │
- │  Reviewer   │    │  Reviewer   │    │  Reviewer   │
- └──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+ ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+ │     Spec     │   │   Quality    │   │   Security   │
+ │   Reviewer   │   │   Reviewer   │   │   Reviewer   │
+ └──────┬───────┘   └──────┬───────┘   └──────┬───────┘
         │                  │                  │
         └──────────────────┼──────────────────┘
                            ▼
