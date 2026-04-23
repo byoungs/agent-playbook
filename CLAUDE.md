@@ -17,7 +17,7 @@
   - `cmd1 && cmd2` → make two separate Bash calls
   - `cd dir && cmd` → use absolute paths or tool flags (already a rule above)
 - **NEVER use `jq` or Bash to post-process MCP tool results.** Use the `Read` tool to read the result file — Claude can parse JSON directly from file contents. This includes email threads, Linear results, and any other MCP output. Do NOT write jq scripts to temp files, do NOT use `jq` with pipes, do NOT use for-loops to iterate over JSON arrays. The Read tool + your own JSON comprehension is faster, simpler, and doesn't trigger permission prompts.
-- **Manage long-running processes properly.** If you start a dev server or background process, run it with `run_in_background` so you retain control of it. Never use `lsof | xargs kill` or `pkill` to clean up — that's a sign you lost track of what you started. If a port is already in use, investigate what's running before killing it (it may be the user's process).
+- **Manage long-running processes properly.** If you start a dev server or background process, run it with `run_in_background` so you retain control of it. Never use `lsof | xargs kill` or `pkill` to clean up — that's a sign you lost track of what you started. If a port is already in use, investigate what's running before killing it (it may be the user's process). **Before launching a dev server (`make dev`, `pnpm dev`, `npm run dev`, etc.), probe the expected port first with `curl -sI localhost:PORT`. If it responds, the dev server is already running (likely the user's own) — reuse it, don't respawn. Respawning leaves orphans (e.g. Vite falls back to :5174, :5175…) and the original Go/Node bind fails.** Reason: in a wealth-guard session, `make dev` was invoked while user's server was already on :8080 — Go crashed with `bind: address already in use` while Vite spawned an orphan on :5178.
 
 ## Environment Variables & Secrets
 - **NEVER put secrets or passwords in command-line arguments.** No `PGPASSWORD=xxx psql`, no `--password=xxx`, no `KEY=xxx command`. Secrets must come from environment variables or hardcoded local dev constants.
@@ -58,6 +58,16 @@
 
 ## Code Quality
 - **NEVER suppress, disable, or ignore warnings.** No `#[allow(...)]`, `// nolint`, `// eslint-disable`, `@SuppressWarnings`, `#pragma warning(disable)`, `_ = err`, or equivalent in any language. Fix the root cause. If asked to "fix warnings," that means fix the code that causes them, not silence the compiler.
+
+## UI Verification
+- **Playwright MCP fails when user's Chrome is open.** The Playwright MCP browser server (`mcp-chrome-*`) holds a singleton lock on `~/Library/Caches/ms-playwright/mcp-chrome-*`. When the user has their own Chrome running, `browser_navigate` / `browser_resize` / `browser_take_screenshot` return `"Opening in existing browser session"` and exit. Fallback: invoke `chrome-headless-shell` directly via Bash — it uses a separate profile and works alongside the user's Chrome.
+  ```
+  ~/Library/Caches/ms-playwright/chromium_headless_shell-*/chrome-headless-shell-mac-arm64/chrome-headless-shell \
+    --headless --disable-gpu --no-sandbox --hide-scrollbars \
+    --window-size=1440,817 --virtual-time-budget=3000 \
+    --screenshot=out.png http://localhost:PORT/path
+  ```
+  `--virtual-time-budget=3000` is essential — without it, the screenshot fires before XHRs/first render complete. Use `--window-size=390,844` for iPhone-class phone testing. Read the PNG back via the `Read` tool to verify visually. Reason: Playwright MCP repeatedly failed to launch in a wealth-guard UI-tightening session; this fallback worked in one shot.
 
 ## Learned Patterns
 
