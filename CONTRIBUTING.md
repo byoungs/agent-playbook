@@ -30,7 +30,7 @@ Skills read project context from each project's `CLAUDE.md`. `/dev-flow` sets th
 ## Dev Flow
 Flow: worktree
 
-## Linear
+## Linear  (OPTIONAL — omit this whole section to disable Linear; that's the default)
 - Workspace: your-workspace
 - Team: Your Team (key: XX)
 - Project: Your Project Name
@@ -108,6 +108,6 @@ These are not user-facing skills. They're read and inlined into subagent prompts
 
 - **[amux](https://github.com/byoungs/amux)** — Terminal multiplexer for parallel agents
 - **[wtr](https://github.com/byoungs/wtr)** — Worktree review TUI (worktree flow)
-- **Linear MCP server** — Backlog management (`/dev next`, `/dev track`, `/tidy`)
+- **Linear MCP server** *(optional, off by default)* — Backlog management for `/dev next`, `/dev track`, `/tidy`. Brian's setup does NOT use Linear; skills fall back to a local `BACKLOG.md`. A project opts in only by adding a `## Linear` section to its CLAUDE.md.
 - **Git worktrees** — `/dev` and `/stage` use `EnterWorktree`/`ExitWorktree` (worktree flow)
 - **Superpowers plugin** — TDD, verification, code review templates

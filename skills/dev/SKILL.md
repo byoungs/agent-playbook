@@ -1,6 +1,6 @@
 ---
 name: dev
-description: "The central development command. /dev <description> starts the full pipeline. /dev next picks up a Linear task. /dev track <note> captures for later. Covers the entire lifecycle from idea to merged code."
+description: "The central development command. /dev <description> starts the full pipeline. /dev next picks up a backlog task. /dev track <note> captures for later. Covers the entire lifecycle from idea to merged code."
 argument-hint: "<description> | next [issue ID] | track <note>"
 ---
 
@@ -9,6 +9,19 @@ argument-hint: "<description> | next [issue ID] | track <note>"
 The single entry point for all development work. Handles the full lifecycle from idea to
 merged code, including brainstorming, planning, implementation with TDD, parallel review,
 and staging for merge.
+
+## Linear is optional (off by default)
+
+Linear is **not used** in Brian's setup and is off unless a project opts in. A project uses
+Linear only if its CLAUDE.md has a `## Linear` section (workspace/team/project). If that
+section is absent — the default — then **skip every Linear step in this skill silently**:
+no issue creation, no comments, no status moves. The pipeline runs identically without them.
+Where a step below says "Create a Linear issue" or "Post Linear comment", treat it as a no-op
+when Linear is not configured.
+
+`track` mode without Linear: append the note to a `BACKLOG.md` at the project root (create it
+if missing) and tell the user "Tracked in BACKLOG.md". `next` mode without Linear: read
+`BACKLOG.md` for the next item, or ask the user what to work on.
 
 ## Modes
 

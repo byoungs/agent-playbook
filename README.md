@@ -6,7 +6,7 @@ Every project shares these skills and follows these patterns. Project-specific c
 
 ## How I Work
 
-I run multiple Claude Code agents in parallel across projects using [amux](https://github.com/byoungs/amux) (a terminal multiplexer for AI coding) and [wtr](https://github.com/byoungs/wtr) (a worktree review TUI). A backlog lives in [Linear](https://linear.app) but most work starts as a thought — "this needs auth" or "that API is too slow" — and spins up from there.
+I run multiple Claude Code agents in parallel across projects using [amux](https://github.com/byoungs/amux) (a terminal multiplexer for AI coding) and [wtr](https://github.com/byoungs/wtr) (a worktree review TUI). Most work starts as a thought — "this needs auth" or "that API is too slow" — and spins up from there; a lightweight `BACKLOG.md` catches anything that needs to wait. (The pipeline can sync to [Linear](https://linear.app) if a project opts in, but that's off by default.)
 
 ```
 ┌──────────────────────────────────────────────────────────────┐

@@ -81,7 +81,7 @@ But when it feels like threads are converging, offer:
 
 When the user is ready to capture outcomes:
 - **Library-worthy insights** (design reasoning, product knowledge, architecture rationale) → offer to write up in `docs/`
-- **Actionable work items** → offer to create Linear issues via `/track`
+- **Actionable work items** → offer to capture via `/dev track` (appends to `BACKLOG.md`, or a Linear issue only if the project has a `## Linear` section in CLAUDE.md — off by default)
 - **Both** → do both
 
 The user drives when and whether to capture. Don't auto-create artifacts.

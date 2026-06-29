@@ -38,9 +38,10 @@ For stale/orphaned worktrees, ask: "Delete these? [list]" Wait for confirmation.
    - Not merged but no recent commits → likely abandoned
 3. Report and ask before deleting.
 
-## Step 3: Linear Task Audit
+## Step 3: Linear Task Audit (optional — off by default)
 
-**Requires:** Linear MCP server configured. Read CLAUDE.md for Linear details.
+**Requires:** a `## Linear` section in the project CLAUDE.md. Brian's setup does not use
+Linear, so **skip this step entirely** unless that section exists.
 
 1. List "In Progress" issues for the team.
 2. For each:
