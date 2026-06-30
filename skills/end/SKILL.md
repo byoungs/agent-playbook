@@ -50,6 +50,11 @@ next session prompts less.
 
 - Look back over THIS session's tool calls. Find Bash/MCP calls that were
   denied, prompted, or are obviously safe + repeated (and would prompt again).
+- **Dedupe against existing rules FIRST.** Read the target settings file(s) and
+  check whether a rule (incl. wildcards like `mcp__server__*`, `make *`,
+  `git *`) already covers the pattern. If covered, propose nothing — say
+  "already allowed." Likewise, if a GUIDE just restates an existing CLAUDE.md
+  rule, mark it FLAG (agent drift), not a new rule.
 - Classify each pattern (reuse the `/learn` taxonomy):
   - **ALLOW** — safe, repetitive → propose an exact rule for settings.
     e.g. `Bash(git stash)`, `Bash(make -C * deploy)`, `mcp__claude_ai_Google_Calendar__list_events`.
