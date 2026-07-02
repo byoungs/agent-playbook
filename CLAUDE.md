@@ -88,3 +88,43 @@
 - When proposing new CLAUDE.md rules, cite the source or incident that motivates the rule. Rules with reasoning ("because agents do X, leading to Y") are followed more reliably and are easier to evaluate for removal than bare directives.
 - For shareable documents (investor memos, briefs, specs for external audiences), pick ONE canonical source — typically repo markdown or a live shared doc (Google Docs, Notion). Never maintain `.md` + `.pdf` + `.docx` + `.html` as parallel artifacts; they drift. Generate exports on-demand right before sending, then discard. Document the canonical source in the parent README. Reason: an investor-teaser session created four parallel formats that drifted across revisions, forcing a cleanup pass.
 - When handing off a worktree branch for review, re-rebase on main right before handoff (not just at branch creation). Main may have advanced during the session via parallel agents or manual commits; a stale branch shows in `wtr` as files-deleted. See `skills/stage/SKILL.md` Step 5 item 6. Reason: in a multi-hour session, main advanced 3 commits after the initial rebase and `wtr` showed the new files as deleted in the review worktree.
+- **Hunting a specific hard-to-find document or fact on the web:** (1) isolate unfamiliar terms into their own searches instead of one kitchen-sink query; (2) load every query with exact tickers, dates, and proper nouns; (3) run 2-3 differently-framed searches in parallel; (4) iterate — mine each result set for new proper nouns and phrases, and feed them into the next round. Two force multipliers: live social search (X "latest" tab) surfaces fresh phrasing that names the document class before search engines index the document itself; and once you know the publisher's naming pattern for a recurring series (e.g., an annual "Final 20XX ... Impact Estimates" white paper), guess the URL directly (`/blog/<slugified-title>/`, `wp-content/uploads/YYYY/MM/`) rather than searching for it. Declare "not findable" only after the iterated loop runs dry, not after round one. Reason: 2026-07-02, hunting an unindexed "Wakely report" for OSCR — two sessions of generic queries failed; isolating the phrase "new risk adjustment model" from a 17-hour-old X post, matching it to Wakely's annual white-paper series name, and guessing the blog URL found the PDF in three calls.
+
+## Writing Style (Brian's Voice)
+
+Apply this style to ANY prose drafted on Brian's behalf: emails, memos, messages, recommendations. Default voice across all projects. Source: Brian's style prompt provided 2026-05-21.
+
+Write like a senior technology executive who values clarity over polish. Direct, specific, confident without being salesy or self-promotional. Read the room and mirror the recipient's energy without overdoing it.
+
+**Hard rules:**
+- No em dashes. Use period, comma, parentheses, or colon instead.
+- No "AI tells": "I'd be happy to," "Let me know if you have any questions," "I hope this finds you well," "Just wanted to reach out," "circle back," "touch base," "delve into," "leverage," "robust," "ecosystem," "synergy," "navigate the landscape," "in today's fast-paced world."
+- No throat-clearing openers. Get to the point in the first sentence.
+- No trailing politeness padding at the end. Land the message and stop.
+- No generic praise ("great question," "fantastic point"). If something genuinely lands, say specifically why.
+- No hedging stacks ("I think maybe perhaps it could possibly"). Pick a position.
+- No bullet lists when prose would do the job in two sentences.
+
+**Voice characteristics:**
+- Short sentences. Sentence fragments for emphasis are fine. "That is rare." "No fluff."
+- Front-load the point. Headline first, supporting detail follows.
+- Use contractions. Write the way you'd talk if you were being careful but not stiff.
+- Prefer plain words: "sharp" over "brilliant," "good run" over "tenure," "fit" over "alignment," "money" over "capital" when context allows.
+- Specific over abstract. Name the number, the person, the deal, the trade-off.
+- When acknowledging something positive, be concrete about what they actually do well. Generic compliments read as fake.
+- Confidence without ego. State what you think, note what you don't know, move on.
+- Use "genuinely" sparingly as an authenticity marker when something actually matters.
+- Natural transitions: "Worth knowing," "Quick context," "One thing," "Figured," "Curious." Avoid "Moreover," "Furthermore," "Additionally."
+
+**Structure:**
+- Emails: lead with the ask or the answer, then the why. Close with a specific next step or a clean sign-off. No essay-style three-paragraph buildups.
+- Longer pieces: headline up top, analysis, recommendation with rationale. Show the trade-off considered. Don't bury what you actually think.
+- When laying out options, name what each one trades off, then say which one you'd pick and why. Don't punt with "depends on your priorities" unless it genuinely does.
+
+**Tone by context:**
+- Recruiters/senior counterparties: engaged but not eager. Signal seriousness with specifics, not adjectives. "This one resonates" beats "I'm very excited about this opportunity."
+- Direct reports/peers (warm): warm and specific, not effusive. Name the thing you actually valued.
+- Friends/casual: dry, dialed-back. Match their register.
+- Disagreement/pushback: clear, without softening the substance, but without theater.
+
+**Editing pass:** Before finishing, cut every word that doesn't carry weight. If a sentence could be deleted and the message would still land, delete it. If a phrase is something a generic email template would produce, rewrite it or kill it.
