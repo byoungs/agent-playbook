@@ -9,6 +9,7 @@
   - `echo "..." > file` → use the `Write` tool
   - `ls` for file discovery → use the `Glob` tool
   - **There is NO excuse for using these.** Every time you use `find` or `grep` in Bash, the user gets interrupted with a permission prompt. The dedicated tools are faster, produce better output, and never prompt.
+  - **Exception:** if the session's harness does not provide the dedicated tool (no Grep/Glob in the tool list — some harness variants omit them), a single non-piped `grep`/`ls` in Bash is the correct fallback; the ban assumes the dedicated tool exists. (Hit 2026-07-03: a session shipped with no Grep/Glob tools at all.)
 - **NEVER use pipes (`|`), semicolons (`;`), or `&&` chains in Bash commands.** These create compound commands that ALWAYS trigger permission prompts regardless of allow rules. Instead:
   - `git log ... | head -10` → use `git log -10 ...` (most CLI tools have limit flags)
   - `cmd | grep pattern` → use the `Grep` tool instead
@@ -30,6 +31,7 @@
   Never use `lsof | xargs kill` or `pkill` to clean up — that's a sign you lost track of what you started. If a port is in use, investigate, don't kill. Reason: in a wealth-guard session, agent-spawned `make dev` crashed from a port collision with the user's own server; in a follow-up session the user confirmed that terminal-run dev/deploy commands are reliable and agent-spawned ones are not.
 
 ## Environment Variables & Secrets
+- **Credential stores are off-limits, and a hook enforces it.** As of 2026-09-01 the PreToolUse hook `~/.claude/hooks/block-secret-reads.sh` blocks any Bash command that pairs a reader (`cat`/`sed`/`grep`/`awk`/`head`/`strings`/`python`/`cp`/…) with `.ssh/`, `.aws/credentials`, `.sorare-keys.zsh`, `.pgpass`, a gog keyring, or `byoungs-hub/.agent-token`. Matching `Read()` deny rules sit in `~/.claude/settings.json`; `**/.env` is `ask`, not blocked. Don't route around it — when you need a secret's *effect*, use a wrapper script that reads it internally (pattern: `byoungs-hub/scripts/agent-fetch.sh`); when you need the *value*, ask Brian. Two known false positives: `chmod`/`ls`/`stat` on those paths are fine (not readers, so allowed), but a Bash command whose text merely *mentions* one of the paths gets blocked even when it reads nothing — write those files with the Write/Edit tools instead. Reason: 9/1/26 audit found `Read` blanket-allowed with only relative-path denies, so every key on the box was one `sed -n 1p` away.
 - **NEVER put secrets or passwords in command-line arguments.** No `PGPASSWORD=xxx psql`, no `--password=xxx`, no `KEY=xxx command`. Secrets must come from environment variables or hardcoded local dev constants.
 - **NEVER use `source .env`**, `. ./.env`, `eval "$(direnv ...)"`, or any shell magic to load env vars in Bash commands.** `dev.sh` is the only thing that loads env files. Makefile targets use hardcoded constants.
 - **NEVER use `export VAR=value`** in Bash commands to set project config. If a variable is needed, add it to `dev.env` (non-secret) or `.env` (secret).
