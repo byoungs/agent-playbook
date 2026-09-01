@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# Symlink agent-playbook skills, hooks, and global CLAUDE.md into ~/.claude/
-# so they're available in every project.
+# Symlink agent-playbook skills, hooks, settings, and global CLAUDE.md into
+# ~/.claude/ so they're available in every project.
 #
-# Note: the hooks are only *registered* by ~/.claude/settings.json, which is not
-# tracked here. On a fresh machine, add the hooks/ entries to that file's
-# hooks.PreToolUse by hand after running this.
+# settings.json carries the permission allow/deny/ask lists and registers the
+# hooks in hooks/. It holds no secrets, but it does hardcode absolute paths
+# under $HOME, so it is machine-specific.
 #
 # Usage: bash setup.sh
 #
@@ -19,6 +19,8 @@ HOOKS_SRC="$SCRIPT_DIR/hooks"
 HOOKS_DST="$HOME/.claude/hooks"
 CLAUDE_MD_SRC="$SCRIPT_DIR/CLAUDE.md"
 CLAUDE_MD_DST="$HOME/.claude/CLAUDE.md"
+SETTINGS_SRC="$SCRIPT_DIR/settings.json"
+SETTINGS_DST="$HOME/.claude/settings.json"
 
 mkdir -p "$SKILLS_DST" "$HOOKS_DST"
 
@@ -69,7 +71,17 @@ for hook_src in "$HOOKS_SRC"/*.sh; do
     ln -s "$hook_src" "$target"
 done
 
+# Symlink settings.json (permissions + hook registrations)
+if [ -L "$SETTINGS_DST" ]; then
+    echo "  update: settings.json (replacing existing symlink)"
+    rm "$SETTINGS_DST"
+elif [ -f "$SETTINGS_DST" ]; then
+    echo "  backup: settings.json (existing file moved to settings.json.bak)"
+    mv "$SETTINGS_DST" "$SETTINGS_DST.bak"
+fi
+ln -s "$SETTINGS_SRC" "$SETTINGS_DST"
+echo "  link: settings.json → ~/.claude/settings.json"
+
 echo ""
-echo "Done. Skills, hooks, and global CLAUDE.md available via ~/.claude/"
+echo "Done. Skills, hooks, settings, and global CLAUDE.md available via ~/.claude/"
 echo "Run 'ls -la $SKILLS_DST $HOOKS_DST' to verify."
-echo "Reminder: register the hooks in ~/.claude/settings.json (not tracked here)."

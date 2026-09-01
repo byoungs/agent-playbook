@@ -1,0 +1,231 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Bash(pgrep:*)",
+      "Bash(system_profiler SPBluetoothDataType*)",
+      "Bash(source /Users/brianyoungs/.nvm/nvm.sh*)",
+      "Bash(. /Users/brianyoungs/.nvm/nvm.sh*)",
+      "Bash(nvm *)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(pnpm *)",
+      "Bash(yarn *)",
+      "Bash(tsc *)",
+      "Bash(git *)",
+      "Bash(git -C *)",
+      "Bash(gh *)",
+      "Bash(ls*)",
+      "Bash(pwd)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(tree *)",
+      "Bash(file *)",
+      "Bash(which *)",
+      "Bash(env *)",
+      "Bash(jq *)",
+      "Bash(whois *)",
+      "Bash(dig *)",
+      "Bash(nslookup *)",
+      "Bash(host *)",
+      "Bash(curl *)",
+      "Bash(for *)",
+      "Bash(test *)",
+      "Bash([ *)",
+      "Bash(prettier *)",
+      "Bash(eslint *)",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Read",
+      "Write",
+      "Bash(go *)",
+      "WebFetch",
+      "WebSearch",
+      "Bash(make *)",
+      "Bash(make)",
+      "Bash(poetry *)",
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(uv run pytest)",
+      "mcp__claude_ai_Gmail__*",
+      "mcp__claude_ai_Google_Calendar__*",
+      "mcp__claude_ai_Google_Drive__*",
+      "mcp__plugin_playwright_playwright__*",
+      "mcp__plugin_context7_context7__*",
+      "mcp__plugin_supabase_supabase__*",
+      "Bash(./ci-check.sh*)",
+      "Bash(./dev-check.sh*)",
+      "Bash(./dev-restart.sh*)",
+      "Bash(gog *)",
+      "Bash(for domain *)",
+      "Bash(sqlgen *)",
+      "Bash(fly *)",
+      "Bash(cargo *)",
+      "Bash(gofmt *)",
+      "Bash(*/node_modules/.bin/tsc *)",
+      "Bash(psql *)",
+      "Bash(*=* go *)",
+      "Bash(*=* make *)",
+      "Bash(*=* npm *)",
+      "Bash(*=* npx *)",
+      "Bash(docker *)",
+      "Bash(sed *)",
+      "Bash(supabase *)",
+      "Bash(migrate *)",
+      "Bash(swift *)",
+      "Bash(tmux *)",
+      "Bash(touch *)",
+      "Bash(strings *)",
+      "Bash(sample *)",
+      "Bash(kill *)",
+      "Bash(wc *)",
+      "Bash(sleep *)",
+      "Bash(scp *)",
+      "Bash(mdimport *)",
+      "Bash(mdls *)",
+      "Bash(pandoc *)",
+      "Bash(typst *)",
+      "Bash(unzip -p *)",
+      "Bash(rm -f /tmp/*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(sudo *)",
+      "Bash(curl *| bash*)",
+      "Read(./secrets/**)",
+      "Read(./**/credentials*)",
+      "Read(//Users/brianyoungs/.ssh/**)",
+      "Read(//Users/brianyoungs/.aws/credentials)",
+      "Read(//Users/brianyoungs/.sorare-keys.zsh)",
+      "Read(//Users/brianyoungs/**/.agent-token)",
+      "Read(//Users/brianyoungs/.config/**/keyring/**)",
+      "Read(//Users/brianyoungs/.pgpass)"
+    ],
+    "ask": [
+      "Bash(git reset*)",
+      "Bash(rm *)",
+      "mcp__claude_ai_Google_Calendar__create_event",
+      "mcp__claude_ai_Google_Calendar__update_event",
+      "mcp__claude_ai_Google_Calendar__delete_event",
+      "mcp__claude_ai_Google_Calendar__respond_to_event",
+      "mcp__claude_ai_Gmail__create_draft",
+      "mcp__claude_ai_Gmail__create_label",
+      "mcp__claude_ai_Gmail__update_label",
+      "mcp__claude_ai_Gmail__delete_label",
+      "mcp__claude_ai_Gmail__label_message",
+      "mcp__claude_ai_Gmail__label_thread",
+      "mcp__claude_ai_Gmail__unlabel_message",
+      "mcp__claude_ai_Gmail__unlabel_thread",
+      "mcp__claude_ai_Google_Drive__create_file",
+      "mcp__claude_ai_Google_Drive__copy_file",
+      "Read(//Users/brianyoungs/**/.env)",
+      "Read(//Users/brianyoungs/**/.env.*)"
+    ]
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brianyoungs/.claude/hooks/block-secret-reads.sh",
+            "statusMessage": "Checking for credential reads..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/brianyoungs/.claude/hooks/block-force-push.sh",
+            "statusMessage": "Checking for force push..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit --amend*)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); remote_head=$(git rev-parse origin/$branch 2>/dev/null); local_head=$(git rev-parse HEAD 2>/dev/null); if [ \"$remote_head\" = \"$local_head\" ]; then echo 'This commit has already been pushed. Create a new commit instead of amending.' && exit 2; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f Makefile ] && grep -q '^fmt:' Makefile; then make fmt 2>/dev/null; fi"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Context was compacted. CLAUDE.md has been refreshed from disk. If the agent-playbook brain was recently updated (new rules, patterns, or skill changes), those updates are now active in this session.'"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PANE=$(tmux display-message -t $TMUX_PANE -p '#{pane_index}'); SESS=$(tmux display-message -t $TMUX_PANE -p '#{session_name}'); FRONT=$(lsappinfo info -only name $(lsappinfo front) 2>/dev/null); echo \"$(date) pane=$PANE session=$SESS front=$FRONT\" >> /tmp/amux-hook4.log; AMUX_SESSION=$SESS amux alert-pane $PANE >> /tmp/amux-hook4.log 2>&1; echo \"  alert=$(tmux show-options -p -t $SESS:.$PANE -v @amux-alert 2>/dev/null) count=$(tmux show-options -t $SESS -v @amux-alert-count 2>/dev/null) last_notify=$(tmux show-environment -t $SESS AMUX_LAST_NOTIFY 2>/dev/null)\" >> /tmp/amux-hook4.log"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "claude-md-management@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "linear@claude-plugins-official": false,
+    "playwright@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "supabase@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true,
+    "caveman@caveman": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "plansDirectory": "plans",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "agentPushNotifEnabled": true,
+  "fullscreen": "fullscreen"
+}
