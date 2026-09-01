@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 #
-# Symlink agent-playbook skills and global CLAUDE.md into ~/.claude/
+# Symlink agent-playbook skills, hooks, and global CLAUDE.md into ~/.claude/
 # so they're available in every project.
+#
+# Note: the hooks are only *registered* by ~/.claude/settings.json, which is not
+# tracked here. On a fresh machine, add the hooks/ entries to that file's
+# hooks.PreToolUse by hand after running this.
 #
 # Usage: bash setup.sh
 #
@@ -11,10 +15,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILLS_SRC="$SCRIPT_DIR/skills"
 SKILLS_DST="$HOME/.claude/skills"
+HOOKS_SRC="$SCRIPT_DIR/hooks"
+HOOKS_DST="$HOME/.claude/hooks"
 CLAUDE_MD_SRC="$SCRIPT_DIR/CLAUDE.md"
 CLAUDE_MD_DST="$HOME/.claude/CLAUDE.md"
 
-mkdir -p "$SKILLS_DST"
+mkdir -p "$SKILLS_DST" "$HOOKS_DST"
 
 # Symlink global CLAUDE.md
 if [ -L "$CLAUDE_MD_DST" ]; then
@@ -44,6 +50,26 @@ for skill_dir in "$SKILLS_SRC"/*/; do
     ln -s "$skill_dir" "$target"
 done
 
+for hook_src in "$HOOKS_SRC"/*.sh; do
+    [ -e "$hook_src" ] || continue
+    hook_name="$(basename "$hook_src")"
+    target="$HOOKS_DST/$hook_name"
+
+    if [ -L "$target" ]; then
+        echo "  update: $hook_name (replacing existing symlink)"
+        rm "$target"
+    elif [ -f "$target" ]; then
+        echo "  backup: $hook_name (existing file moved to $hook_name.bak)"
+        mv "$target" "$target.bak"
+    else
+        echo "  link: $hook_name"
+    fi
+
+    chmod +x "$hook_src"
+    ln -s "$hook_src" "$target"
+done
+
 echo ""
-echo "Done. Skills and global CLAUDE.md available via ~/.claude/"
-echo "Run 'ls -la $SKILLS_DST' to verify."
+echo "Done. Skills, hooks, and global CLAUDE.md available via ~/.claude/"
+echo "Run 'ls -la $SKILLS_DST $HOOKS_DST' to verify."
+echo "Reminder: register the hooks in ~/.claude/settings.json (not tracked here)."
